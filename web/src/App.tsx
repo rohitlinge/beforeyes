@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { Seo } from '@/components/Seo'
 import { ToastProvider } from '@/components/Toast'
 import { AuthProvider } from '@/features/auth/AuthProvider'
 import {
@@ -24,6 +25,7 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
         <BrowserRouter>
+          <Seo />
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route

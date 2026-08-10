@@ -1,0 +1,15 @@
+# Only public marketing/legal pages should be crawled.
+# Auth, app, join, and private room flows stay out of search results.
+
+User-agent: *
+Allow: /
+Allow: /privacy
+Allow: /terms
+
+Disallow: /login
+Disallow: /signup
+Disallow: /app
+Disallow: /join
+Disallow: /join/
+Disallow: /room/
+Disallow: /feedback
