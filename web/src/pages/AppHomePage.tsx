@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { BrandMark } from '@/components/BrandMark'
 import { EmptyState } from '@/components/EmptyState'
 import { InlineError } from '@/components/InlineError'
 import { useToast } from '@/components/Toast'
@@ -75,9 +76,7 @@ export function AppHomePage() {
     <div className="mx-auto min-h-screen max-w-3xl bg-background px-margin-mobile py-10">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-headline text-xl font-semibold text-primary">
-            The Pre-Commitment Game
-          </p>
+          <BrandMark to="/" size="sm" />
           <h1 className="mt-4 font-display text-3xl font-bold tracking-tight text-on-surface">
             Hi{profile?.displayName ? `, ${profile.displayName}` : ''}
           </h1>

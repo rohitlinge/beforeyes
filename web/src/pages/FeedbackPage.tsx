@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom'
+import { BrandMark } from '@/components/BrandMark'
 import { Atmosphere } from '@/components/Atmosphere'
 import { SiteFooter } from '@/components/SiteFooter'
+import { Link } from 'react-router-dom'
 
 const FEEDBACK_URL = import.meta.env.VITE_FEEDBACK_URL?.trim()
 const FEEDBACK_EMAIL =
@@ -10,12 +11,7 @@ export function FeedbackPage() {
   return (
     <Atmosphere>
       <div className="mx-auto flex min-h-screen max-w-lg flex-col px-margin-mobile py-10 md:px-8">
-        <Link
-          to="/"
-          className="font-headline text-lg font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-        >
-          The Pre-Commitment Game
-        </Link>
+        <BrandMark to="/" size="sm" />
         <h1 className="mt-8 font-display text-3xl font-bold tracking-tight text-on-surface">
           Send feedback
         </h1>
@@ -36,7 +32,7 @@ export function FeedbackPage() {
             </a>
           ) : (
             <a
-              href={`mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('Pre-Commitment Game feedback')}`}
+              href={`mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('BeforeYes feedback')}`}
               className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3.5 font-label text-sm font-semibold text-on-primary transition-opacity hover:opacity-90"
             >
               Email feedback

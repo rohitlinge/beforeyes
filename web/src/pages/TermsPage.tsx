@@ -5,7 +5,7 @@ export function TermsPage() {
   return (
     <LegalDocLayout title="Terms of Use" updated="August 10, 2026">
       <p>
-        By creating an account or using The Pre-Commitment Game, you agree to these
+        By creating an account or using BeforeYes, you agree to these
         terms. If you do not agree, do not use the app.
       </p>
 
@@ -18,7 +18,7 @@ export function TermsPage() {
 
       <h2>What the product is</h2>
       <p>
-        The Pre-Commitment Game is a private two-player tool: create or join a
+        BeforeYes is a private two-player tool: create or join a
         room, build questions, answer, and submit a double-blind Yes/No verdict.
         Results show Match or No Match only. It is not legal, medical, or
         relationship counseling advice.

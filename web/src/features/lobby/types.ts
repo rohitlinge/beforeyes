@@ -57,7 +57,7 @@ export function inviteUrl(roomId: string): string {
 
 export function whatsappShareUrl(roomId: string): string {
   const url = inviteUrl(roomId)
-  const text = `Join me in The Pre-Commitment Game — a private room for our big talk:\n${url}`
+  const text = `Join me on BeforeYes — a private room for our big talk:\n${url}`
   return `https://wa.me/?text=${encodeURIComponent(text)}`
 }
 

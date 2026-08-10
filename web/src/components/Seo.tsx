@@ -4,22 +4,24 @@ import { useLocation } from 'react-router-dom'
 /** Public pages search engines may index. Everything else is noindex. */
 const INDEXABLE_PATHS = new Set(['/', '/privacy', '/terms'])
 
+const BRAND = 'BeforeYes'
+
 const PAGE_TITLES: Record<string, string> = {
-  '/': 'The Pre-Commitment Game',
-  '/privacy': 'Privacy Policy — The Pre-Commitment Game',
-  '/terms': 'Terms — The Pre-Commitment Game',
-  '/feedback': 'Feedback — The Pre-Commitment Game',
-  '/login': 'Log in — The Pre-Commitment Game',
-  '/signup': 'Sign up — The Pre-Commitment Game',
-  '/app': 'Home — The Pre-Commitment Game',
-  '/join': 'Join room — The Pre-Commitment Game',
+  '/': BRAND,
+  '/privacy': `Privacy Policy — ${BRAND}`,
+  '/terms': `Terms — ${BRAND}`,
+  '/feedback': `Feedback — ${BRAND}`,
+  '/login': `Log in — ${BRAND}`,
+  '/signup': `Sign up — ${BRAND}`,
+  '/app': `Home — ${BRAND}`,
+  '/join': `Join room — ${BRAND}`,
 }
 
 function titleForPath(pathname: string): string {
   if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname]
-  if (pathname.startsWith('/join/')) return 'Join room — The Pre-Commitment Game'
-  if (pathname.startsWith('/room/')) return 'Private session — The Pre-Commitment Game'
-  return 'The Pre-Commitment Game'
+  if (pathname.startsWith('/join/')) return `Join room — ${BRAND}`
+  if (pathname.startsWith('/room/')) return `Private session — ${BRAND}`
+  return BRAND
 }
 
 function ensureMeta(name: string): HTMLMetaElement {

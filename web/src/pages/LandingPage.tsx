@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { BrandMark } from '@/components/BrandMark'
 import { SiteFooter } from '@/components/SiteFooter'
 import { useAuth } from '@/features/auth/AuthProvider'
 
@@ -68,12 +69,7 @@ export function LandingPage() {
         }`}
       >
         <div className="mx-auto flex max-w-5xl items-center justify-between px-margin-mobile py-4 md:px-8">
-          <a
-            href="#top"
-            className="font-headline text-base font-semibold tracking-tight text-primary sm:text-lg"
-          >
-            The Pre-Commitment Game
-          </a>
+          <BrandMark href="#top" size="sm" />
           <div className="flex items-center gap-2 sm:gap-3">
             {user ? (
               <>
@@ -110,9 +106,9 @@ export function LandingPage() {
       <main id="top">
         {/* Hero — first viewport: brand, one headline, one sentence, CTAs */}
         <section className="mx-auto flex min-h-[100svh] max-w-3xl flex-col justify-center px-margin-mobile pb-16 pt-28 text-center md:px-8 md:pt-32">
-          <p className="animate-fade-in-up font-headline text-2xl font-bold tracking-tight text-primary sm:text-3xl md:text-4xl">
-            The Pre-Commitment Game
-          </p>
+          <div className="animate-fade-in-up flex justify-center">
+            <BrandMark size="lg" />
+          </div>
           <h1 className="animate-fade-in-up animation-delay-100 mt-5 font-display text-3xl font-bold tracking-tight text-on-surface sm:text-4xl md:text-5xl">
             Have the conversation before the commitment.
           </h1>

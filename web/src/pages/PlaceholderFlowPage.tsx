@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router-dom'
+import { BrandMark } from '@/components/BrandMark'
 
 type PlaceholderFlowPageProps = {
   title: string
@@ -19,9 +20,7 @@ export function PlaceholderFlowPage({
 
   return (
     <div className="min-h-screen bg-background px-margin-mobile py-10 max-w-2xl mx-auto">
-      <p className="font-headline text-lg font-semibold text-primary">
-        The Pre-Commitment Game
-      </p>
+      <BrandMark to="/app" size="sm" />
       <h1 className="font-display text-3xl font-bold text-on-surface mt-4 tracking-tight">
         {title}
       </h1>

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { BrandMark } from '@/components/BrandMark'
 import { Atmosphere } from '@/components/Atmosphere'
 import { SiteFooter } from '@/components/SiteFooter'
 
@@ -18,12 +18,7 @@ export function LegalDocLayout({
     <Atmosphere>
       <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-margin-mobile py-10 md:px-8">
         <header className="mb-10">
-          <Link
-            to="/"
-            className="font-headline text-lg font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-          >
-            The Pre-Commitment Game
-          </Link>
+          <BrandMark to="/" size="sm" />
           <h1 className="mt-6 font-display text-3xl font-bold tracking-tight text-on-surface sm:text-4xl">
             {title}
           </h1>

@@ -1,4 +1,4 @@
-# The Pre-Commitment Game (Web)
+# BeforeYes (Web)
 
 React + Firebase website for private couple Q&A before commitment.
 

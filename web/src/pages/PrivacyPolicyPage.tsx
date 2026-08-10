@@ -4,7 +4,7 @@ export function PrivacyPolicyPage() {
   return (
     <LegalDocLayout title="Privacy Policy" updated="August 10, 2026">
       <p>
-        The Pre-Commitment Game (“we”, “the app”) helps two people have a private,
+        BeforeYes (“we”, “the app”) helps two people have a private,
         structured conversation before a serious commitment. This policy explains
         what we collect and how we use it.
       </p>

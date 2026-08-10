@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { BrandMark } from '@/components/BrandMark'
 import { SessionExitButton } from '@/components/SessionExitButton'
 import type { Room } from '@/features/lobby/types'
 
@@ -28,9 +29,7 @@ export function AppHeader({
       }`}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-margin-mobile py-3.5 md:px-8">
-        <p className="font-headline text-base font-semibold tracking-tight text-primary sm:text-lg">
-          The Pre-Commitment Game
-        </p>
+        <BrandMark to="/app" size="sm" />
         {trailing ??
           (showExit ? (
             <SessionExitButton

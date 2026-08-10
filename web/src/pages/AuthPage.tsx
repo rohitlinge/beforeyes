@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Atmosphere } from '@/components/Atmosphere'
+import { BrandMark } from '@/components/BrandMark'
 import { InlineError } from '@/components/InlineError'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { authErrorMessage, normalizeUsername } from '@/features/auth/types'
@@ -67,12 +68,7 @@ export function AuthPage({ mode }: AuthPageProps) {
     <Atmosphere>
       <div className="flex min-h-screen flex-col items-center justify-center px-margin-mobile py-10">
         <div className="w-full max-w-md rounded-[32px] border border-white/60 bg-surface-container-lowest/95 p-8 ambient-shadow backdrop-blur-sm">
-          <Link
-            to="/"
-            className="font-headline text-lg font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-          >
-            The Pre-Commitment Game
-          </Link>
+          <BrandMark to="/" size="sm" />
           <h1 className="mt-6 font-display text-3xl font-bold tracking-tight text-on-surface">
             {isLogin ? 'Welcome back' : 'Create your account'}
           </h1>

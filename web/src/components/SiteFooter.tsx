@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { BrandMark } from '@/components/BrandMark'
 
 const FEEDBACK_URL = import.meta.env.VITE_FEEDBACK_URL?.trim()
 
@@ -8,10 +9,8 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-5xl flex-col gap-6 text-sm text-on-surface-variant">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="font-headline font-semibold text-primary">
-              The Pre-Commitment Game
-            </p>
-            <p className="mt-1 max-w-sm">
+            <BrandMark to="/" size="sm" />
+            <p className="mt-2 max-w-sm">
               A clarity tool for serious couples. Not a dating marketplace.
             </p>
           </div>
