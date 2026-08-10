@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Question Builder - The Pre-Commitment Game</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#d9c6ff",
+                        "inverse-primary": "#8ad3ce",
+                        "outline-variant": "#bec9c7",
+                        "on-secondary-fixed-variant": "#4d3f6e",
+                        "surface-container": "#f2edea",
+                        "on-surface": "#1d1b1a",
+                        "surface-tint": "#166965",
+                        "surface-dim": "#ded9d6",
+                        "background": "#fef8f5",
+                        "inverse-on-surface": "#f5f0ed",
+                        "secondary-fixed": "#eaddff",
+                        "on-tertiary-fixed": "#3f0304",
+                        "tertiary-container": "#e38076",
+                        "surface-container-highest": "#e7e1df",
+                        "inverse-surface": "#32302e",
+                        "primary-container": "#5fa8a3",
+                        "on-tertiary-fixed-variant": "#7a2e28",
+                        "on-error": "#ffffff",
+                        "secondary": "#665687",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#6f7978",
+                        "surface-container-high": "#ece7e4",
+                        "surface-bright": "#fef8f5",
+                        "on-secondary-container": "#5f5081",
+                        "on-secondary-fixed": "#211240",
+                        "surface-container-low": "#f8f2f0",
+                        "tertiary": "#98453e",
+                        "on-primary-container": "#003a38",
+                        "on-primary-fixed": "#00201e",
+                        "tertiary-fixed": "#ffdad6",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff",
+                        "surface": "#fef8f5",
+                        "on-background": "#1d1b1a",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#d0bef6",
+                        "on-surface-variant": "#3f4948",
+                        "surface-variant": "#e7e1df",
+                        "primary-fixed-dim": "#8ad3ce",
+                        "on-primary-fixed-variant": "#00504c",
+                        "on-tertiary-container": "#601b17",
+                        "primary": "#166965",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#a6f0ea"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "64px",
+                        "gutter": "16px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "margin-mobile": "20px",
+                        "md": "24px",
+                        "lg": "40px",
+                        "base": "8px",
+                        "margin-desktop": "auto"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Work Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Work Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body-md": ["Work Sans"],
+                        "body-lg": ["Work Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom Scrollbar for inner lists */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #e7e1df; /* surface-variant */
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex flex-col selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-background dark:bg-background docked full-width top-0 z-40 sticky shadow-none transition-transform duration-200" id="top-app-bar">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-[1200px] mx-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary filled text-2xl">favorite</span>
+<h1 class="font-headline-md text-headline-md-mobile md:text-headline-md text-primary dark:text-inverse-primary font-bold tracking-tight">The Pre-Commitment Game</h1>
+</div>
+<!-- Desktop Nav (Hidden on Mobile) -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex items-center gap-2" href="#">
+<span class="material-symbols-outlined">handshake</span> Lobby
+                </a>
+<a class="text-primary font-bold font-label-md text-label-md hover:opacity-80 transition-opacity flex items-center gap-2" href="#">
+<span class="material-symbols-outlined filled">edit_note</span> Builder
+                </a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex items-center gap-2" href="#">
+<span class="material-symbols-outlined">chat_bubble</span> Answers
+                </a>
+<a class="text-on-surface-variant font-label-md text-label-md hover:opacity-80 transition-opacity flex items-center gap-2" href="#">
+<span class="material-symbols-outlined">verified</span> Verdict
+                </a>
+</nav>
+<button class="text-primary dark:text-inverse-primary font-label-md text-label-md hover:opacity-80 transition-opacity flex items-center gap-2 border border-outline-variant px-4 py-2 rounded-full">
+                Exit Session <span class="material-symbols-outlined text-[18px]">logout</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop py-lg md:py-xl flex flex-col lg:flex-row gap-lg md:gap-xl pb-32 lg:pb-lg">
+<!-- Left Column: Builder Area -->
+<div class="flex-grow flex flex-col gap-lg">
+<!-- Header Section -->
+<section>
+<div class="flex items-center gap-sm mb-xs">
+<span class="material-symbols-outlined text-outline">lock</span>
+<span class="font-label-md text-label-md text-outline uppercase tracking-widest">Private Space</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-background mb-base">Build Your Question List</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                    Select topics that matter to you or write your own. Your partner won't see these until you both choose to exchange them.
+                </p>
+</section>
+<!-- Suggested Categories (Chips) -->
+<section class="bg-surface rounded-2xl p-md border border-surface-variant shadow-[0_20px_40px_-15px_rgba(22,105,101,0.05)]">
+<h3 class="font-label-md text-label-md text-on-surface mb-sm">Explore Categories</h3>
+<div class="flex flex-wrap gap-sm">
+<button class="px-6 py-3 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-md transition-colors border border-outline-variant flex items-center gap-2 group">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">account_balance</span> Finances
+                    </button>
+<button class="px-6 py-3 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-md transition-colors border border-outline-variant flex items-center gap-2 group">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">timeline</span> Future
+                    </button>
+<button class="px-6 py-3 rounded-full bg-primary-container text-on-primary-container font-body-md text-body-md transition-all border border-transparent shadow-[0_4px_12px_rgba(95,168,163,0.2)] flex items-center gap-2 scale-[0.98]">
+<span class="material-symbols-outlined filled">family_restroom</span> Family
+                    </button>
+<button class="px-6 py-3 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-md transition-colors border border-outline-variant flex items-center gap-2 group">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors">self_improvement</span> Lifestyle
+                    </button>
+</div>
+<!-- Prompt Suggestions based on active category -->
+<div class="mt-md pt-md border-t border-surface-variant">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-sm">Suggested Family Questions</p>
+<div class="flex flex-col gap-sm">
+<div class="flex items-start justify-between p-sm rounded-lg hover:bg-surface-container transition-colors cursor-pointer group">
+<p class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">How do you envision balancing career ambitions with starting a family?</p>
+<button class="text-outline hover:text-primary p-1 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<div class="flex items-start justify-between p-sm rounded-lg hover:bg-surface-container transition-colors cursor-pointer group">
+<p class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">What traditions from your childhood do you want to pass on?</p>
+<button class="text-outline hover:text-primary p-1 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Custom Input Area -->
+<section class="bg-[#F1F3F2] rounded-2xl p-md border border-transparent focus-within:border-primary focus-within:bg-surface transition-all shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
+<label class="block font-label-md text-label-md text-on-surface mb-sm" for="custom-question">Add a Custom Question</label>
+<div class="flex flex-col gap-sm relative">
+<textarea class="w-full bg-transparent border-none focus:ring-0 resize-none font-body-md text-body-md text-on-surface placeholder:text-outline p-0" id="custom-question" placeholder="What's on your mind? e.g., 'How do we handle holiday visits between families?'" rows="3"></textarea>
+<div class="flex justify-end mt-2">
+<button class="bg-primary text-on-primary rounded-full px-6 py-2 font-label-md text-label-md flex items-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-[0_4px_12px_rgba(22,105,101,0.2)]">
+                            Add to List <span class="material-symbols-outlined text-[18px]">add_task</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Current List Overview (Simplified) -->
+<section>
+<h3 class="font-label-md text-label-md text-on-surface mb-sm flex items-center justify-between">
+<span>Your Selected Questions</span>
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full text-xs">4 added</span>
+</h3>
+<div class="flex flex-col gap-xs">
+<!-- Placeholder visual for selected items to avoid clutter -->
+<div class="h-12 bg-surface-container rounded-lg border border-surface-variant flex items-center px-4 opacity-70">
+<div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden">
+<div class="w-1/3 h-full bg-outline-variant"></div>
+</div>
+</div>
+<div class="h-12 bg-surface-container rounded-lg border border-surface-variant flex items-center px-4 opacity-70">
+<div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden">
+<div class="w-1/2 h-full bg-outline-variant"></div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Status Sidebar & Action -->
+<aside class="w-full lg:w-[360px] flex flex-col gap-md flex-shrink-0">
+<!-- Partner Status Card -->
+<div class="bg-surface-container-low rounded-2xl p-md border border-surface-variant shadow-[0_10px_30px_-10px_rgba(0,0,0,0.03)] relative overflow-hidden">
+<!-- Subtle background ambient effect -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary-fixed-dim rounded-full blur-3xl opacity-20 -mr-10 -mt-10"></div>
+<h3 class="font-label-md text-label-md text-on-surface mb-sm relative z-10">Session Status</h3>
+<div class="flex items-center gap-md mt-sm relative z-10">
+<div class="relative">
+<div class="w-12 h-12 rounded-full bg-surface-variant border-2 border-surface flex items-center justify-center overflow-hidden">
+<!-- Using initials instead of image for minimal aesthetic -->
+<span class="font-headline-md text-headline-md text-outline">S</span>
+</div>
+<!-- Typing/Status indicator -->
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-surface rounded-full flex items-center justify-center">
+<div class="w-3 h-3 bg-secondary rounded-full animate-pulse"></div>
+</div>
+</div>
+<div>
+<p class="font-body-md text-body-md text-on-surface">Sam is still building their list...</p>
+<p class="font-label-sm text-label-sm text-outline mt-1">3 questions added so far</p>
+</div>
+</div>
+</div>
+<!-- Ready Action Card -->
+<div class="bg-surface rounded-2xl p-md border border-surface-variant shadow-[0_20px_40px_-15px_rgba(22,105,101,0.08)] flex flex-col items-center text-center mt-auto">
+<div class="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center mb-md">
+<span class="material-symbols-outlined text-outline text-3xl">sync_disabled</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs">Ready to Exchange?</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-md">
+                    Once both of you mark as ready, your lists will be shared, and you can begin answering.
+                </p>
+<!-- The Ready Button (Interactive) -->
+<!-- Note: To demonstrate the 'turns coral when active' requirement in a static mockup, 
+                     I'll use a small script to toggle the state for demonstration purposes, though normally 
+                     this would be driven by app logic. -->
+<button class="w-full bg-surface-variant text-on-surface-variant rounded-full py-4 font-label-md text-label-md transition-all duration-300 flex items-center justify-center gap-2 hover:bg-surface-dim" id="ready-btn">
+                    Mark as Ready
+                </button>
+</div>
+</aside>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 rounded-t-xl bg-surface-container-low dark:bg-surface-container-low shadow-[0_-4px_20px_0_rgba(22,105,101,0.06)] flex justify-around items-center px-4 py-3 pb-safe border-t-0">
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 px-6 py-2 hover:bg-surface-container-high transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">handshake</span>
+<span class="font-label-sm text-label-sm">Lobby</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-6 py-2 scale-95 transition-all" href="#">
+<span class="material-symbols-outlined filled mb-1">edit_note</span>
+<span class="font-label-sm text-label-sm">Builder</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 px-6 py-2 hover:bg-surface-container-high transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">chat_bubble</span>
+<span class="font-label-sm text-label-sm">Answers</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 px-6 py-2 hover:bg-surface-container-high transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">verified</span>
+<span class="font-label-sm text-label-sm">Verdict</span>
+</a>
+</nav>
+<script>
+        // Simple interaction to demonstrate the 'ready' button state change
+        const readyBtn = document.getElementById('ready-btn');
+        let isReady = false;
+
+        readyBtn.addEventListener('click', () => {
+            isReady = !isReady;
+            if (isReady) {
+                // Change to Coral (tertiary-container / tertiary)
+                readyBtn.className = "w-full bg-tertiary-container text-on-tertiary-container rounded-full py-4 font-label-md text-label-md transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(227,128,118,0.3)] scale-[0.98]";
+                readyBtn.innerHTML = `Ready to Exchange <span class="material-symbols-outlined filled">check_circle</span>`;
+            } else {
+                // Revert to default
+                readyBtn.className = "w-full bg-surface-variant text-on-surface-variant rounded-full py-4 font-label-md text-label-md transition-all duration-300 flex items-center justify-center gap-2 hover:bg-surface-dim";
+                readyBtn.innerHTML = `Mark as Ready`;
+            }
+        });
+    </script>
+</body></html>

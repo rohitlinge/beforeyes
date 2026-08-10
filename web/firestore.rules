@@ -1,0 +1,242 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function roomDoc(roomId) {
+      return get(/databases/$(database)/documents/rooms/$(roomId)).data;
+    }
+
+    function isRoomMember(roomId) {
+      return isSignedIn() && request.auth.uid in roomDoc(roomId).memberIds;
+    }
+
+    function partnersUnchanged() {
+      return request.resource.data.partnerA == resource.data.partnerA
+        && request.resource.data.partnerB == resource.data.partnerB
+        && request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.memberIds == resource.data.memberIds
+        && request.resource.data.partnerADisplayName == resource.data.partnerADisplayName
+        && request.resource.data.partnerAUsername == resource.data.partnerAUsername
+        && request.resource.data.partnerBDisplayName == resource.data.partnerBDisplayName
+        && request.resource.data.partnerBUsername == resource.data.partnerBUsername;
+    }
+
+    function onlySelfPhaseFields() {
+      return (
+        request.auth.uid == resource.data.partnerA
+        && request.resource.data.get('partnerBReadyQuestions', false) == resource.data.get('partnerBReadyQuestions', false)
+        && request.resource.data.get('partnerBQuestionCount', 0) == resource.data.get('partnerBQuestionCount', 0)
+        && request.resource.data.get('partnerBQuestionsDelivered', false) == resource.data.get('partnerBQuestionsDelivered', false)
+        && request.resource.data.get('partnerBReadyAnswers', false) == resource.data.get('partnerBReadyAnswers', false)
+        && request.resource.data.get('partnerBAnsweredCount', 0) == resource.data.get('partnerBAnsweredCount', 0)
+        && request.resource.data.get('partnerBAnswersDelivered', false) == resource.data.get('partnerBAnswersDelivered', false)
+        && request.resource.data.get('partnerBVerdictSubmitted', false) == resource.data.get('partnerBVerdictSubmitted', false)
+      ) || (
+        request.auth.uid == resource.data.partnerB
+        && request.resource.data.get('partnerAReadyQuestions', false) == resource.data.get('partnerAReadyQuestions', false)
+        && request.resource.data.get('partnerAQuestionCount', 0) == resource.data.get('partnerAQuestionCount', 0)
+        && request.resource.data.get('partnerAQuestionsDelivered', false) == resource.data.get('partnerAQuestionsDelivered', false)
+        && request.resource.data.get('partnerAReadyAnswers', false) == resource.data.get('partnerAReadyAnswers', false)
+        && request.resource.data.get('partnerAAnsweredCount', 0) == resource.data.get('partnerAAnsweredCount', 0)
+        && request.resource.data.get('partnerAAnswersDelivered', false) == resource.data.get('partnerAAnswersDelivered', false)
+        && request.resource.data.get('partnerAVerdictSubmitted', false) == resource.data.get('partnerAVerdictSubmitted', false)
+      );
+    }
+
+    // Prefer Functions for delivered/result; client fallback still allowed until Blaze.
+    function clientCannotForgeResultAlone() {
+      // Result can only change from null → match|no_match when both verdicts submitted.
+      return resource.data.get('result', null) == request.resource.data.get('result', null)
+        || (
+          resource.data.get('result', null) == null
+          && request.resource.data.result in ['match', 'no_match']
+          && resource.data.partnerAVerdictSubmitted == true
+          && resource.data.partnerBVerdictSubmitted == true
+        );
+    }
+
+    function canCloseRoom() {
+      return request.auth.uid in resource.data.memberIds
+        && resource.data.status != 'closed'
+        && request.resource.data.status == 'closed'
+        && partnersUnchanged()
+        && request.resource.data.closedBy == request.auth.uid
+        && request.resource.data.result == resource.data.result
+        && request.resource.data.get('partnerAQuestionsDelivered', false) == resource.data.get('partnerAQuestionsDelivered', false)
+        && request.resource.data.get('partnerBQuestionsDelivered', false) == resource.data.get('partnerBQuestionsDelivered', false)
+        && request.resource.data.get('partnerAAnswersDelivered', false) == resource.data.get('partnerAAnswersDelivered', false)
+        && request.resource.data.get('partnerBAnswersDelivered', false) == resource.data.get('partnerBAnswersDelivered', false);
+    }
+
+    // Soft abuse guard: join only while waiting and empty partner slot (enforced in update rule below).
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && request.resource.data.keys().hasAll([
+          'uid', 'email', 'displayName', 'username', 'createdAt', 'updatedAt'
+        ]);
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == userId
+        && request.resource.data.email == resource.data.email;
+      allow delete: if false;
+    }
+
+    match /usernames/{username} {
+      allow read: if true;
+      allow create: if isSignedIn()
+        && request.resource.data.uid == request.auth.uid;
+      allow update: if false;
+      allow delete: if isSignedIn()
+        && resource.data.uid == request.auth.uid;
+    }
+
+    match /questionDecks/{deckId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /rooms/{roomId} {
+      allow read: if isSignedIn() && (
+        request.auth.uid in resource.data.memberIds
+        || resource.data.status == 'waiting_partner'
+      );
+
+      allow create: if isSignedIn()
+        && request.resource.data.roomId == roomId
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.partnerA == request.auth.uid
+        && request.resource.data.partnerB == null
+        && request.resource.data.status == 'waiting_partner'
+        && request.resource.data.memberIds.size() == 1
+        && request.auth.uid in request.resource.data.memberIds
+        && request.resource.data.get('result', null) == null;
+
+      allow update: if isSignedIn() && (
+        (
+          // Partner B joins (one-time)
+          resource.data.status == 'waiting_partner'
+          && resource.data.partnerB == null
+          && request.auth.uid != resource.data.partnerA
+          && request.resource.data.partnerA == resource.data.partnerA
+          && request.resource.data.createdBy == resource.data.createdBy
+          && request.resource.data.partnerB == request.auth.uid
+          && request.resource.data.status == 'questions_building'
+          && request.resource.data.memberIds.size() == 2
+          && resource.data.partnerA in request.resource.data.memberIds
+          && request.auth.uid in request.resource.data.memberIds
+          && request.resource.data.get('result', null) == null
+        )
+        ||
+        (
+          // Member phase updates (ready flags, exchange fallback, verdict flags)
+          request.auth.uid in resource.data.memberIds
+          && resource.data.partnerB != null
+          && resource.data.status != 'closed'
+          && partnersUnchanged()
+          && onlySelfPhaseFields()
+          && clientCannotForgeResultAlone()
+          && resource.data.status in [
+            'questions_building',
+            'questions_ready',
+            'questions_exchanged',
+            'answering',
+            'answers_ready',
+            'answers_exchanged',
+            'verdict_pending',
+            'result_revealed'
+          ]
+          && request.resource.data.status in [
+            'questions_building',
+            'questions_ready',
+            'questions_exchanged',
+            'answering',
+            'answers_ready',
+            'answers_exchanged',
+            'verdict_pending',
+            'result_revealed'
+          ]
+        )
+        ||
+        canCloseRoom()
+      );
+
+      allow delete: if false;
+
+      match /privateQuestions/{uid} {
+        allow read, write: if isSignedIn()
+          && request.auth.uid == uid
+          && isRoomMember(roomId)
+          && roomDoc(roomId).status != 'closed';
+      }
+
+      // Partner inboxes — prefer Cloud Functions; client write allowed only when both ready
+      // (fallback until Blaze plan enables Functions deploy).
+      match /exchangedQuestions/{uid} {
+        allow read: if isSignedIn()
+          && request.auth.uid == uid
+          && isRoomMember(roomId);
+
+        allow create, update: if isSignedIn()
+          && request.auth.uid != uid
+          && isRoomMember(roomId)
+          && roomDoc(roomId).status != 'closed'
+          && uid in roomDoc(roomId).memberIds
+          && roomDoc(roomId).partnerAReadyQuestions == true
+          && roomDoc(roomId).partnerBReadyQuestions == true
+          && request.resource.data.fromUid == request.auth.uid
+          && request.resource.data.keys().hasAll(['fromUid', 'questions', 'exchangedAt']);
+      }
+
+      match /privateAnswers/{uid} {
+        allow read, write: if isSignedIn()
+          && request.auth.uid == uid
+          && isRoomMember(roomId)
+          && roomDoc(roomId).status != 'closed';
+      }
+
+      match /exchangedAnswers/{uid} {
+        allow read: if isSignedIn()
+          && request.auth.uid == uid
+          && isRoomMember(roomId);
+
+        allow create, update: if isSignedIn()
+          && request.auth.uid != uid
+          && isRoomMember(roomId)
+          && roomDoc(roomId).status != 'closed'
+          && uid in roomDoc(roomId).memberIds
+          && roomDoc(roomId).get('partnerAReadyAnswers', false) == true
+          && roomDoc(roomId).get('partnerBReadyAnswers', false) == true
+          && request.resource.data.fromUid == request.auth.uid
+          && request.resource.data.keys().hasAll(['fromUid', 'answers', 'exchangedAt']);
+      }
+
+      // Never readable by partner
+      match /privateVerdicts/{uid} {
+        allow read, write: if isSignedIn()
+          && request.auth.uid == uid
+          && isRoomMember(roomId)
+          && roomDoc(roomId).status != 'closed';
+      }
+
+      // Yes signals readable by members so both YES can resolve; NO creates no signal.
+      match /verdictYesSignals/{uid} {
+        allow read: if isRoomMember(roomId);
+        allow create: if isSignedIn()
+          && request.auth.uid == uid
+          && isRoomMember(roomId)
+          && roomDoc(roomId).status != 'closed'
+          && request.resource.data.yes == true;
+        allow update, delete: if false;
+      }
+    }
+  }
+}

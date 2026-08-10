@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Double-Blind Verdict - The Pre-Commitment Game</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#d9c6ff",
+                        "inverse-primary": "#8ad3ce",
+                        "outline-variant": "#bec9c7",
+                        "on-secondary-fixed-variant": "#4d3f6e",
+                        "surface-container": "#f2edea",
+                        "on-surface": "#1d1b1a",
+                        "surface-tint": "#166965",
+                        "surface-dim": "#ded9d6",
+                        "background": "#fef8f5",
+                        "inverse-on-surface": "#f5f0ed",
+                        "secondary-fixed": "#eaddff",
+                        "on-tertiary-fixed": "#3f0304",
+                        "tertiary-container": "#e38076",
+                        "surface-container-highest": "#e7e1df",
+                        "inverse-surface": "#32302e",
+                        "primary-container": "#5fa8a3",
+                        "on-tertiary-fixed-variant": "#7a2e28",
+                        "on-error": "#ffffff",
+                        "secondary": "#665687",
+                        "tertiary-fixed-dim": "#ffb4ab",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#6f7978",
+                        "surface-container-high": "#ece7e4",
+                        "surface-bright": "#fef8f5",
+                        "on-secondary-container": "#5f5081",
+                        "on-secondary-fixed": "#211240",
+                        "surface-container-low": "#f8f2f0",
+                        "tertiary": "#98453e",
+                        "on-primary-container": "#003a38",
+                        "on-primary-fixed": "#00201e",
+                        "tertiary-fixed": "#ffdad6",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff",
+                        "surface": "#fef8f5",
+                        "on-background": "#1d1b1a",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#d0bef6",
+                        "on-surface-variant": "#3f4948",
+                        "surface-variant": "#e7e1df",
+                        "primary-fixed-dim": "#8ad3ce",
+                        "on-primary-fixed-variant": "#00504c",
+                        "on-tertiary-container": "#601b17",
+                        "primary": "#166965",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#a6f0ea"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "2xl": "1.5rem"
+                    },
+                    spacing: {
+                        "xl": "64px",
+                        "gutter": "16px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "margin-mobile": "20px",
+                        "md": "24px",
+                        "lg": "40px",
+                        "base": "8px",
+                        "margin-desktop": "auto"
+                    },
+                    fontFamily: {
+                        "label-sm": ["Work Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Work Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "display": ["Plus Jakarta Sans"],
+                        "body-md": ["Work Sans"],
+                        "body-lg": ["Work Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .glass-panel {
+            background: rgba(254, 248, 245, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(22, 105, 101, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col relative overflow-x-hidden selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- Ambient Background Mesh -->
+<div class="fixed inset-0 z-0 pointer-events-none overflow-hidden opacity-40">
+<div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-secondary-container blur-[120px] mix-blend-multiply opacity-60"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-primary-fixed blur-[140px] mix-blend-multiply opacity-50"></div>
+</div>
+<!-- TopAppBar -->
+<header class="relative z-10 w-full flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 bg-background/80 backdrop-blur-md">
+<!-- Brand / Identity -->
+<div class="text-primary font-headline-md text-headline-md-mobile md:text-headline-md tracking-tight font-bold">
+            The Pre-Commitment Game
+        </div>
+<!-- Desktop Navigation (Hidden on Mobile) -->
+<nav class="hidden md:flex items-center gap-2 bg-surface-container rounded-full px-2 py-1">
+<button class="px-4 py-2 rounded-full font-label-md text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors">Lobby</button>
+<button class="px-4 py-2 rounded-full font-label-md text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors">Builder</button>
+<button class="px-4 py-2 rounded-full font-label-md text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors">Answers</button>
+<!-- Active Tab -->
+<button class="px-4 py-2 rounded-full font-label-md text-primary font-bold bg-secondary-container text-on-secondary-container shadow-sm">Verdict</button>
+</nav>
+<!-- Trailing Action -->
+<button class="border border-outline-variant text-on-surface-variant px-5 py-2 rounded-full font-label-md hover:bg-surface-container hover:text-on-surface transition-colors flex items-center gap-2">
+            Exit Session
+        </button>
+</header>
+<!-- Main Canvas -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center p-gutter md:p-lg w-full max-w-[1200px] mx-auto pb-32 md:pb-lg">
+<!-- Verdict Container (Glassmorphism Bento Style) -->
+<div class="glass-panel rounded-[32px] p-md md:p-xl w-full max-w-3xl flex flex-col items-center text-center gap-lg shadow-[0_24px_48px_-12px_rgba(22,105,101,0.08)] relative overflow-hidden transition-transform duration-300">
+<!-- Context Icon -->
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-inner mb-2">
+<span class="material-symbols-outlined text-[32px] md:text-[40px]" style="font-variation-settings: 'FILL' 1;">how_to_reg</span>
+</div>
+<!-- Copy Group -->
+<div class="flex flex-col gap-sm md:gap-md max-w-2xl">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">
+                    You've both read each other's answers. Now, how do you feel about moving forward?
+                </h1>
+<p class="font-body-md md:font-body-lg text-body-md md:text-body-lg text-on-surface-variant flex items-center justify-center gap-2 bg-surface-container-low inline-flex mx-auto px-4 py-2 rounded-full border border-outline-variant/30">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+                    Your choice is private. You will only see a match if you both choose YES.
+                </p>
+</div>
+<!-- Action Area -->
+<div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+<!-- YES Button -->
+<button class="group relative overflow-hidden bg-primary text-on-primary rounded-2xl p-6 flex flex-col items-center justify-center gap-1 shadow-[0_8px_20px_-4px_rgba(22,105,101,0.25)] hover:-translate-y-1 transition-all duration-300 outline-none focus:ring-4 focus:ring-primary-container">
+<div class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300"></div>
+<span class="font-headline-md text-headline-md tracking-wide">YES</span>
+<span class="font-label-sm text-label-sm opacity-90 font-normal">(I'm ready to move forward)</span>
+</button>
+<!-- NO Button -->
+<button class="group bg-surface-container hover:bg-surface-container-high text-on-surface rounded-2xl p-6 flex flex-col items-center justify-center gap-1 border border-outline-variant/40 transition-all duration-300 hover:-translate-y-1 outline-none focus:ring-4 focus:ring-surface-variant">
+<span class="font-headline-md text-headline-md text-on-surface-variant group-hover:text-on-surface transition-colors">NO</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant opacity-70 font-normal">(This isn't for me)</span>
+</button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-surface-container-low shadow-[0_-4px_20px_0_rgba(22,105,101,0.06)] rounded-t-xl border-t border-outline-variant/10">
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 px-4 py-2 hover:bg-surface-container-high transition-colors rounded-xl">
+<span class="material-symbols-outlined mb-1">handshake</span>
+<span class="font-label-sm text-label-sm">Lobby</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 px-4 py-2 hover:bg-surface-container-high transition-colors rounded-xl">
+<span class="material-symbols-outlined mb-1">edit_note</span>
+<span class="font-label-sm text-label-sm">Builder</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant opacity-60 px-4 py-2 hover:bg-surface-container-high transition-colors rounded-xl">
+<span class="material-symbols-outlined mb-1">chat_bubble</span>
+<span class="font-label-sm text-label-sm">Answers</span>
+</button>
+<!-- Active State -->
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-6 py-2 scale-95 transition-all">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-sm text-label-sm">Verdict</span>
+</button>
+</nav>
+</body></html>
