@@ -8,6 +8,7 @@ Allow: /terms
 
 Disallow: /login
 Disallow: /signup
+Disallow: /verify-email
 Disallow: /app
 Disallow: /join
 Disallow: /join/

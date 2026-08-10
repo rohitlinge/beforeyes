@@ -47,7 +47,10 @@ export function AuthPage({ mode }: AuthPageProps) {
     setSubmitting(true)
     try {
       if (isLogin) {
-        await signIn(email, password)
+        const signedIn = await signIn(email, password)
+        navigate(signedIn.emailVerified ? from : '/verify-email', {
+          replace: true,
+        })
       } else {
         await signUp({
           email,
@@ -55,8 +58,8 @@ export function AuthPage({ mode }: AuthPageProps) {
           displayName,
           username: normalizeUsername(username),
         })
+        navigate('/verify-email', { replace: true })
       }
-      navigate(from, { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : authErrorMessage(err))
     } finally {

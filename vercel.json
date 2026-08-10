@@ -16,6 +16,10 @@
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     },
     {
+      "source": "/verify-email",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
       "source": "/app",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     },

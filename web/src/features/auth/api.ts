@@ -1,8 +1,11 @@
 import {
+  applyActionCode,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
+  type ActionCodeSettings,
   type User,
 } from 'firebase/auth'
 import {
@@ -27,6 +30,13 @@ function requireAuthDb() {
     )
   }
   return { auth, db }
+}
+
+function emailActionSettings(): ActionCodeSettings {
+  return {
+    url: `${window.location.origin}/verify-email`,
+    handleCodeInApp: false,
+  }
 }
 
 function mapProfile(
@@ -104,6 +114,7 @@ export async function signUpWithEmail(params: {
     throw error
   }
 
+  await sendEmailVerification(user, emailActionSettings())
   trackEvent('signup')
   return user
 }
@@ -117,6 +128,35 @@ export async function signInWithEmail(email: string, password: string) {
   )
   await ensureUserProfile(credential.user)
   return credential.user
+}
+
+export async function sendVerificationEmail(user?: User) {
+  const { auth: firebaseAuth } = requireAuthDb()
+  const target = user ?? firebaseAuth.currentUser
+  if (!target) {
+    throw new Error('Sign in to verify your email.')
+  }
+  if (target.emailVerified) {
+    return
+  }
+  await sendEmailVerification(target, emailActionSettings())
+}
+
+/** Completes verification when the email link lands with an oobCode. */
+export async function applyEmailVerificationCode(oobCode: string) {
+  const { auth: firebaseAuth } = requireAuthDb()
+  await applyActionCode(firebaseAuth, oobCode.trim())
+  if (firebaseAuth.currentUser) {
+    await firebaseAuth.currentUser.reload()
+  }
+}
+
+export async function reloadAuthUser(): Promise<User | null> {
+  const { auth: firebaseAuth } = requireAuthDb()
+  const current = firebaseAuth.currentUser
+  if (!current) return null
+  await current.reload()
+  return firebaseAuth.currentUser
 }
 
 export async function logOut() {

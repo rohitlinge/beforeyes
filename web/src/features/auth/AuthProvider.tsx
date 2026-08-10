@@ -12,6 +12,8 @@ import { auth, isFirebaseConfigured } from '@/lib/firebase'
 import {
   ensureUserProfile,
   logOut as apiLogOut,
+  reloadAuthUser,
+  sendVerificationEmail,
   signInWithEmail,
   signUpWithEmail,
   updateUserProfile,
@@ -23,15 +25,18 @@ type AuthContextValue = {
   profile: UserProfile | null
   loading: boolean
   configured: boolean
+  emailVerified: boolean
   signUp: (input: {
     email: string
     password: string
     displayName: string
     username: string
   }) => Promise<void>
-  signIn: (email: string, password: string) => Promise<void>
+  signIn: (email: string, password: string) => Promise<User>
   logOut: () => Promise<void>
   refreshProfile: () => Promise<void>
+  refreshUser: () => Promise<User | null>
+  resendVerificationEmail: () => Promise<void>
   saveProfile: (updates: {
     displayName?: string
     username?: string
@@ -43,6 +48,7 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [emailVerified, setEmailVerified] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -53,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
       setUser(nextUser)
+      setEmailVerified(nextUser?.emailVerified ?? false)
       if (!nextUser) {
         setProfile(null)
         setLoading(false)
@@ -86,12 +93,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   const signIn = useCallback(async (email: string, password: string) => {
-    await signInWithEmail(email, password)
+    return signInWithEmail(email, password)
   }, [])
 
   const logOut = useCallback(async () => {
     await apiLogOut()
     setProfile(null)
+    setEmailVerified(false)
   }, [])
 
   const refreshProfile = useCallback(async () => {
@@ -99,6 +107,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const next = await ensureUserProfile(user)
     setProfile(next)
   }, [user])
+
+  const refreshUser = useCallback(async () => {
+    const next = await reloadAuthUser()
+    setUser(next)
+    setEmailVerified(next?.emailVerified ?? false)
+    return next
+  }, [])
+
+  const resendVerificationEmail = useCallback(async () => {
+    await sendVerificationEmail()
+  }, [])
 
   const saveProfile = useCallback(
     async (updates: { displayName?: string; username?: string }) => {
@@ -115,20 +134,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile,
       loading,
       configured: isFirebaseConfigured,
+      emailVerified,
       signUp,
       signIn,
       logOut,
       refreshProfile,
+      refreshUser,
+      resendVerificationEmail,
       saveProfile,
     }),
     [
       user,
       profile,
       loading,
+      emailVerified,
       signUp,
       signIn,
       logOut,
       refreshProfile,
+      refreshUser,
+      resendVerificationEmail,
       saveProfile,
     ],
   )

@@ -13,6 +13,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/feedback': `Feedback — ${BRAND}`,
   '/login': `Log in — ${BRAND}`,
   '/signup': `Sign up — ${BRAND}`,
+  '/verify-email': `Verify email — ${BRAND}`,
   '/app': `Home — ${BRAND}`,
   '/join': `Join room — ${BRAND}`,
 }

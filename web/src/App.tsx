@@ -5,9 +5,11 @@ import { AuthProvider } from '@/features/auth/AuthProvider'
 import {
   ProtectedRoute,
   PublicOnlyRoute,
+  VerifyEmailRoute,
 } from '@/features/auth/ProtectedRoute'
 import { LandingPage } from '@/pages/LandingPage'
 import { AuthPage } from '@/pages/AuthPage'
+import { VerifyEmailPage } from '@/pages/VerifyEmailPage'
 import { AppHomePage } from '@/pages/AppHomePage'
 import { JoinPage } from '@/pages/JoinPage'
 import { LobbyPage } from '@/pages/LobbyPage'
@@ -42,6 +44,14 @@ export default function App() {
                 <PublicOnlyRoute>
                   <AuthPage mode="signup" />
                 </PublicOnlyRoute>
+              }
+            />
+            <Route
+              path="/verify-email"
+              element={
+                <VerifyEmailRoute>
+                  <VerifyEmailPage />
+                </VerifyEmailRoute>
               }
             />
             <Route
