@@ -2,7 +2,19 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 /** Public pages search engines may index. Everything else is noindex. */
-const INDEXABLE_PATHS = new Set(['/', '/privacy', '/terms'])
+function isIndexablePath(pathname: string): boolean {
+  if (pathname === '/' || pathname === '/privacy' || pathname === '/terms') {
+    return true
+  }
+  if (pathname === '/consultants') return true
+  if (
+    pathname.startsWith('/consultants/') &&
+    pathname !== '/consultants/register'
+  ) {
+    return true
+  }
+  return false
+}
 
 const BRAND = 'BeforeYes'
 const SITE_URL = (
@@ -38,6 +50,24 @@ const PAGE_SEO: Record<string, PageSeo> = {
       'BeforeYes terms for our private two-player clarity tool. Adults only, consensual use, Agree/Disagree ratings, and a shared compatibility score—not dating or counseling.',
     keywords:
       'BeforeYes terms of use, relationship clarity tool terms, private couple Q&A rules, compatibility score terms',
+  },
+  '/consultants': {
+    title: 'Relationship Consultants Directory | BeforeYes',
+    description:
+      'Browse verified relationship consultants who help serious couples prepare for commitment. Admin-approved profiles only.',
+    keywords:
+      'relationship consultants, pre-marital counselors, couples therapists directory, BeforeYes consultants',
+  },
+  '/consultants/register': {
+    title: `Register as a Consultant — ${BRAND}`,
+    description:
+      'Apply to list your relationship consulting practice on BeforeYes. Profiles publish only after admin review.',
+    keywords: 'register relationship consultant, BeforeYes consultant application',
+  },
+  '/admin/consultants': {
+    title: `Consultant Admin — ${BRAND}`,
+    description: 'Review and approve consultant profile applications.',
+    keywords: 'BeforeYes admin',
   },
   '/feedback': {
     title: `Feedback — ${BRAND}`,
@@ -91,6 +121,18 @@ function seoForPath(pathname: string): PageSeo {
       keywords: 'BeforeYes private session, relationship compatibility score',
     }
   }
+  if (
+    pathname.startsWith('/consultants/') &&
+    pathname !== '/consultants/register'
+  ) {
+    return {
+      title: `Relationship Consultant | ${BRAND}`,
+      description:
+        'Verified relationship consultant profile on BeforeYes — guidance for serious couples before commitment.',
+      keywords:
+        'relationship consultant, pre-marital counselor, couples therapist, BeforeYes',
+    }
+  }
   return PAGE_SEO['/']
 }
 
@@ -139,9 +181,18 @@ export function Seo() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    const indexable = INDEXABLE_PATHS.has(pathname)
+    const indexable = isIndexablePath(pathname)
     const page = seoForPath(pathname)
     const url = canonicalPath(pathname)
+
+    // Profile pages set their own SEO after data loads — skip overwrite here.
+    if (
+      pathname.startsWith('/consultants/') &&
+      pathname !== '/consultants/register'
+    ) {
+      ensureNamedMeta('robots').setAttribute('content', 'index, follow')
+      return
+    }
 
     ensureNamedMeta('robots').setAttribute(
       'content',

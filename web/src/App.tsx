@@ -21,6 +21,10 @@ import { ResultPage } from '@/pages/ResultPage'
 import { PrivacyPolicyPage } from '@/pages/PrivacyPolicyPage'
 import { TermsPage } from '@/pages/TermsPage'
 import { FeedbackPage } from '@/pages/FeedbackPage'
+import { ConsultantRegisterPage } from '@/pages/ConsultantRegisterPage'
+import { ConsultantsDirectoryPage } from '@/pages/ConsultantsDirectoryPage'
+import { ConsultantProfilePage } from '@/pages/ConsultantProfilePage'
+import { AdminConsultantsPage } from '@/pages/AdminConsultantsPage'
 
 export default function App() {
   return (
@@ -131,6 +135,17 @@ export default function App() {
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />
+
+            <Route path="/consultants" element={<ConsultantsDirectoryPage />} />
+            <Route
+              path="/consultants/register"
+              element={<ConsultantRegisterPage />}
+            />
+            <Route
+              path="/consultants/:slug"
+              element={<ConsultantProfilePage />}
+            />
+            <Route path="/admin/consultants" element={<AdminConsultantsPage />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

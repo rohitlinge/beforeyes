@@ -19,6 +19,18 @@ export function SiteFooter() {
             className="flex flex-wrap gap-x-5 gap-y-2 font-label text-sm"
           >
             <Link
+              to="/consultants/register"
+              className="hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            >
+              Register as consultant
+            </Link>
+            <Link
+              to="/consultants"
+              className="hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            >
+              Consultants
+            </Link>
+            <Link
               to="/privacy"
               className="hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >

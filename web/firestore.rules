@@ -59,7 +59,10 @@ service cloud.firestore {
         && resource.data.get('result', null) == request.resource.data.get('result', null)
       ) || (
         resource.data.get('compatibilityScore', null) == null
-        && request.resource.data.compatibilityScore is int
+        && (
+          request.resource.data.compatibilityScore is int
+          || request.resource.data.compatibilityScore is float
+        )
         && request.resource.data.compatibilityScore >= 0
         && request.resource.data.compatibilityScore <= 100
         && (
@@ -122,6 +125,54 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Seed docs manually in Console: admins/{uid} → { email: "..." }
+    match /admins/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if false;
+    }
+
+    match /consultantSlugs/{slug} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll(['consultantId', 'createdAt'])
+        && request.resource.data.consultantId is string
+        && request.resource.data.consultantId.size() > 0;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /consultants/{consultantId} {
+      allow read: if resource.data.status == 'approved'
+        || isAdmin()
+        || (isSignedIn() && resource.data.submittedBy == request.auth.uid);
+
+      allow create: if request.resource.data.status == 'pending'
+        && request.resource.data.fullName is string
+        && request.resource.data.fullName.size() >= 2
+        && request.resource.data.email is string
+        && request.resource.data.bio is string
+        && request.resource.data.bio.size() >= 40
+        && request.resource.data.slug is string
+        && request.resource.data.slug.size() >= 2
+        && request.resource.data.keys().hasAll([
+          'slug', 'fullName', 'title', 'city', 'region', 'country',
+          'specialties', 'bio', 'yearsExperience', 'languages',
+          'website', 'email', 'phone', 'photoUrl', 'status',
+          'seoTitle', 'seoDescription', 'seoKeywords',
+          'submittedBy', 'reviewedBy', 'reviewedAt',
+          'createdAt', 'updatedAt'
+        ]);
+
+      allow update: if isAdmin()
+        && request.resource.data.status in ['pending', 'approved'];
+
+      allow delete: if isAdmin();
+    }
+
     match /rooms/{roomId} {
       allow read: if isSignedIn() && (
         request.auth.uid in resource.data.memberIds
@@ -155,13 +206,21 @@ service cloud.firestore {
         )
         ||
         (
-          // Member phase updates (ready flags, exchange fallback, verdict flags)
+          // Member phase updates (ready flags, exchange fallback, verdict/score flags)
           request.auth.uid in resource.data.memberIds
           && resource.data.partnerB != null
           && resource.data.status != 'closed'
           && partnersUnchanged()
           && onlySelfPhaseFields()
-          && clientCannotForgeResultAlone()
+          && (
+            clientCannotForgeResultAlone()
+            || request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'partnerAAgreementsSubmitted',
+              'partnerBAgreementsSubmitted',
+              'status',
+              'updatedAt'
+            ])
+          )
           && resource.data.status in [
             'questions_building',
             'questions_ready',
@@ -252,8 +311,7 @@ service cloud.firestore {
           && request.auth.uid == uid
           && isRoomMember(roomId)
           && roomDoc(roomId).status != 'closed'
-          && request.resource.data.uid == request.auth.uid
-          && request.resource.data.keys().hasAll(['uid', 'agreeCount', 'total', 'submittedAt']);
+          && request.resource.data.uid == request.auth.uid;
         allow delete: if false;
       }
 

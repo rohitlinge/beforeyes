@@ -1,10 +1,12 @@
 # BeforeYes — crawl policy for search engines and AI agents
-# Index only public marketing and legal pages.
+# Index marketing, legal, and approved consultant profiles.
 
 User-agent: *
 Allow: /
 Allow: /privacy
 Allow: /terms
+Allow: /consultants
+Allow: /consultants/
 Allow: /sitemap.xml
 Allow: /llms.txt
 
@@ -16,20 +18,22 @@ Disallow: /join
 Disallow: /join/
 Disallow: /room/
 Disallow: /feedback
+Disallow: /consultants/register
+Disallow: /admin/
 
-# Common AI / LLM crawlers — same public allowlist
 User-agent: GPTBot
 Allow: /
 Allow: /privacy
 Allow: /terms
+Allow: /consultants
 Allow: /sitemap.xml
 Allow: /llms.txt
+Disallow: /consultants/register
+Disallow: /admin/
 Disallow: /login
 Disallow: /signup
-Disallow: /verify-email
 Disallow: /app
 Disallow: /join
-Disallow: /join/
 Disallow: /room/
 Disallow: /feedback
 
@@ -37,45 +41,45 @@ User-agent: ChatGPT-User
 Allow: /
 Allow: /privacy
 Allow: /terms
+Allow: /consultants
 Allow: /llms.txt
 
 User-agent: Google-Extended
 Allow: /
 Allow: /privacy
 Allow: /terms
+Allow: /consultants
 Allow: /sitemap.xml
 Allow: /llms.txt
-Disallow: /login
-Disallow: /signup
-Disallow: /verify-email
-Disallow: /app
-Disallow: /join
-Disallow: /join/
-Disallow: /room/
-Disallow: /feedback
+Disallow: /consultants/register
+Disallow: /admin/
 
 User-agent: anthropic-ai
 Allow: /
 Allow: /privacy
 Allow: /terms
+Allow: /consultants
 Allow: /llms.txt
 
 User-agent: ClaudeBot
 Allow: /
 Allow: /privacy
 Allow: /terms
+Allow: /consultants
 Allow: /llms.txt
 
 User-agent: PerplexityBot
 Allow: /
 Allow: /privacy
 Allow: /terms
+Allow: /consultants
 Allow: /llms.txt
 
 User-agent: Applebot-Extended
 Allow: /
 Allow: /privacy
 Allow: /terms
+Allow: /consultants
 Allow: /llms.txt
 
 Sitemap: https://www.beforeyes.online/sitemap.xml
