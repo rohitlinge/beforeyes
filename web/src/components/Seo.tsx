@@ -5,31 +5,112 @@ import { useLocation } from 'react-router-dom'
 const INDEXABLE_PATHS = new Set(['/', '/privacy', '/terms'])
 
 const BRAND = 'BeforeYes'
+const SITE_URL = (
+  import.meta.env.VITE_SITE_URL?.trim() || 'https://beforeyes.online'
+).replace(/\/$/, '')
 
-const PAGE_TITLES: Record<string, string> = {
-  '/': BRAND,
-  '/privacy': `Privacy Policy — ${BRAND}`,
-  '/terms': `Terms — ${BRAND}`,
-  '/feedback': `Feedback — ${BRAND}`,
-  '/login': `Log in — ${BRAND}`,
-  '/signup': `Sign up — ${BRAND}`,
-  '/verify-email': `Verify email — ${BRAND}`,
-  '/app': `Home — ${BRAND}`,
-  '/join': `Join room — ${BRAND}`,
+type PageSeo = {
+  title: string
+  description: string
+  keywords: string
 }
 
-function titleForPath(pathname: string): string {
-  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname]
-  if (pathname.startsWith('/join/')) return `Join room — ${BRAND}`
-  if (pathname.startsWith('/room/')) return `Private session — ${BRAND}`
-  return BRAND
+const DEFAULT_KEYWORDS =
+  'ask before saying yes, avoid marriage regret, pre marriage questions, hard questions before marriage, serious couples conversation, double-blind relationship questions, BeforeYes, precommitment clarity, private couple Q&A, relationship decision before yes'
+
+const PAGE_SEO: Record<string, PageSeo> = {
+  '/': {
+    title: 'Ask Before Saying Yes Or Regret It After Relationship | BeforeYes',
+    description:
+      'Avoid post-marriage regret. BeforeYes gives serious couples a safe, double-blind space to ask hard questions and decide their future with total dignity.',
+    keywords: `${DEFAULT_KEYWORDS}, ask before saying yes or regret it after, post marriage regret, decide before commitment`,
+  },
+  '/privacy': {
+    title: 'Privacy Policy | BeforeYes — Private Couple Conversations Stay Confidential',
+    description:
+      'How BeforeYes protects your account, private room questions, answers, and double-blind verdicts. Built for adults who value dignity and confidentiality before commitment.',
+    keywords:
+      'BeforeYes privacy policy, private couple conversations, secure relationship questions, data privacy before marriage, confidential Q&A for couples',
+  },
+  '/terms': {
+    title: 'Terms of Use | BeforeYes — Rules for Serious Couples',
+    description:
+      'BeforeYes terms for our private two-player clarity tool. Adults only, consensual use, and double-blind Yes/No verdicts—not dating, counseling, or public matching.',
+    keywords:
+      'BeforeYes terms of use, relationship clarity tool terms, private couple Q&A rules, double-blind verdict terms',
+  },
+  '/feedback': {
+    title: `Feedback — ${BRAND}`,
+    description:
+      'Share product feedback with the BeforeYes team. Help improve the private space serious couples use before saying yes.',
+    keywords: 'BeforeYes feedback, product feedback, couple conversation tool',
+  },
+  '/login': {
+    title: `Log in — ${BRAND}`,
+    description:
+      'Log in to BeforeYes to continue your private, double-blind conversation with your partner.',
+    keywords: 'BeforeYes login, sign in BeforeYes',
+  },
+  '/signup': {
+    title: `Sign up — ${BRAND}`,
+    description:
+      'Create a BeforeYes account to ask hard questions in a safe, private room before you say yes.',
+    keywords: 'BeforeYes sign up, create account BeforeYes, pre marriage questions app',
+  },
+  '/verify-email': {
+    title: `Verify email — ${BRAND}`,
+    description: 'Verify your email to unlock BeforeYes and start a private session with your partner.',
+    keywords: 'BeforeYes verify email',
+  },
+  '/app': {
+    title: `Home — ${BRAND}`,
+    description: 'Your BeforeYes home — create or join a private room for a serious conversation before commitment.',
+    keywords: 'BeforeYes home, private couple room',
+  },
+  '/join': {
+    title: `Join room — ${BRAND}`,
+    description: "Join your partner's private BeforeYes room with an invite link or room code.",
+    keywords: 'join BeforeYes room, couple invite link',
+  },
 }
 
-function ensureMeta(name: string): HTMLMetaElement {
+function seoForPath(pathname: string): PageSeo {
+  if (PAGE_SEO[pathname]) return PAGE_SEO[pathname]
+  if (pathname.startsWith('/join/')) {
+    return {
+      title: `Join room — ${BRAND}`,
+      description: PAGE_SEO['/join'].description,
+      keywords: PAGE_SEO['/join'].keywords,
+    }
+  }
+  if (pathname.startsWith('/room/')) {
+    return {
+      title: `Private session — ${BRAND}`,
+      description:
+        'Private BeforeYes session — questions, answers, and a double-blind verdict between two partners.',
+      keywords: 'BeforeYes private session, double-blind verdict',
+    }
+  }
+  return PAGE_SEO['/']
+}
+
+function ensureNamedMeta(name: string): HTMLMetaElement {
   let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null
   if (!el) {
     el = document.createElement('meta')
     el.setAttribute('name', name)
+    document.head.appendChild(el)
+  }
+  return el
+}
+
+function ensurePropertyMeta(property: string): HTMLMetaElement {
+  let el = document.querySelector(
+    `meta[property="${property}"]`,
+  ) as HTMLMetaElement | null
+  if (!el) {
+    el = document.createElement('meta')
+    el.setAttribute('property', property)
     document.head.appendChild(el)
   }
   return el
@@ -45,24 +126,45 @@ function ensureCanonical(): HTMLLinkElement {
   return el
 }
 
+function canonicalPath(pathname: string): string {
+  if (pathname === '/') return `${SITE_URL}/`
+  return `${SITE_URL}${pathname}`
+}
+
 /**
- * Sets robots + title per route so only marketing/legal pages are indexed.
- * Sensitive auth/session pages get noindex,nofollow.
+ * Sets robots, title, description, keywords, canonical, and social meta per route
+ * so only marketing/legal pages are indexed.
  */
 export function Seo() {
   const { pathname } = useLocation()
 
   useEffect(() => {
     const indexable = INDEXABLE_PATHS.has(pathname)
-    ensureMeta('robots').setAttribute(
+    const page = seoForPath(pathname)
+    const url = canonicalPath(pathname)
+
+    ensureNamedMeta('robots').setAttribute(
       'content',
       indexable ? 'index, follow' : 'noindex, nofollow',
     )
-    document.title = titleForPath(pathname)
+
+    document.title = page.title
+    ensureNamedMeta('description').setAttribute('content', page.description)
+    ensureNamedMeta('keywords').setAttribute('content', page.keywords)
+
+    ensurePropertyMeta('og:site_name').setAttribute('content', BRAND)
+    ensurePropertyMeta('og:type').setAttribute('content', 'website')
+    ensurePropertyMeta('og:title').setAttribute('content', page.title)
+    ensurePropertyMeta('og:description').setAttribute('content', page.description)
+    ensurePropertyMeta('og:url').setAttribute('content', url)
+
+    ensureNamedMeta('twitter:card').setAttribute('content', 'summary_large_image')
+    ensureNamedMeta('twitter:title').setAttribute('content', page.title)
+    ensureNamedMeta('twitter:description').setAttribute('content', page.description)
 
     const canonical = ensureCanonical()
     if (indexable) {
-      canonical.setAttribute('href', `${window.location.origin}${pathname}`)
+      canonical.setAttribute('href', url)
     } else {
       canonical.remove()
     }
