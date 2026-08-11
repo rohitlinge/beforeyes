@@ -161,11 +161,13 @@ service cloud.firestore {
         && request.resource.data.keys().hasAll([
           'slug', 'fullName', 'title', 'city', 'region', 'country',
           'specialties', 'bio', 'yearsExperience', 'languages',
-          'website', 'email', 'phone', 'photoUrl', 'status',
+          'googleBusinessUrl', 'website', 'email', 'phone', 'photoUrl', 'status',
           'seoTitle', 'seoDescription', 'seoKeywords',
           'submittedBy', 'reviewedBy', 'reviewedAt',
           'createdAt', 'updatedAt'
-        ]);
+        ])
+        && request.resource.data.googleBusinessUrl is string
+        && request.resource.data.googleBusinessUrl.size() > 11;
 
       allow update: if isAdmin()
         && request.resource.data.status in ['pending', 'approved'];

@@ -209,6 +209,19 @@ export function ConsultantProfilePage() {
             Contact
           </h2>
           <ul className="mt-3 space-y-2 text-sm text-on-surface-variant">
+            {profile.googleBusinessUrl && (
+              <li>
+                Google Business:{' '}
+                <a
+                  className="font-semibold text-primary"
+                  href={profile.googleBusinessUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View on Google
+                </a>
+              </li>
+            )}
             {profile.email && (
               <li>
                 Email:{' '}

@@ -59,6 +59,7 @@ function mapConsultant(
     languages: Array.isArray(data.languages)
       ? (data.languages as unknown[]).map(String)
       : [],
+    googleBusinessUrl: String(data.googleBusinessUrl ?? ''),
     website: String(data.website ?? ''),
     email: String(data.email ?? ''),
     phone: String(data.phone ?? ''),
@@ -121,6 +122,21 @@ export async function submitConsultantApplication(
   if (input.specialties.length === 0) {
     throw new Error('Select at least one specialty.')
   }
+  const gmb = input.googleBusinessUrl.trim()
+  if (!gmb || !/^https?:\/\//i.test(gmb)) {
+    throw new Error('Add a valid Google Business Profile link (must start with https://).')
+  }
+  const looksLikeGoogle =
+    /google\.(com|co\.[a-z]{2})/i.test(gmb) ||
+    /maps\.app\.goo\.gl/i.test(gmb) ||
+    /goo\.gl\/maps/i.test(gmb) ||
+    /g\.page\//i.test(gmb) ||
+    /business\.google\.com/i.test(gmb)
+  if (!looksLikeGoogle) {
+    throw new Error(
+      'Use your Google Business Profile or Google Maps link (maps.google.com, g.page, or business.google.com).',
+    )
+  }
 
   const baseSlug =
     slugifyName(input.preferredSlug?.trim() || fullName) ||
@@ -154,6 +170,7 @@ export async function submitConsultantApplication(
     bio: input.bio.trim(),
     yearsExperience: Math.max(0, Math.min(60, Math.round(input.yearsExperience || 0))),
     languages: input.languages.length ? input.languages : ['English'],
+    googleBusinessUrl: gmb,
     website: input.website.trim(),
     email: input.email.trim().toLowerCase(),
     phone: input.phone.trim(),

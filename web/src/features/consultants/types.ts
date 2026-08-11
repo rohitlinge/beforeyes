@@ -13,6 +13,8 @@ export type ConsultantProfile = {
   bio: string
   yearsExperience: number
   languages: string[]
+  /** Google Business Profile / Maps listing URL — primary verification signal */
+  googleBusinessUrl: string
   website: string
   email: string
   phone: string
@@ -40,6 +42,7 @@ export type ConsultantApplicationInput = {
   bio: string
   yearsExperience: number
   languages: string[]
+  googleBusinessUrl: string
   website: string
   email: string
   phone: string

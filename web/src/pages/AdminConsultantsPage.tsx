@@ -188,6 +188,16 @@ export function AdminConsultantsPage() {
                         {c.title} · {c.city}
                       </p>
                       <p className="mt-1 text-xs text-on-surface-variant">{c.email}</p>
+                      {c.googleBusinessUrl && (
+                        <a
+                          href={c.googleBusinessUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-1 inline-block text-xs font-semibold text-primary"
+                        >
+                          Google Business Profile →
+                        </a>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <button
@@ -218,6 +228,19 @@ export function AdminConsultantsPage() {
             <h3 className="font-headline text-lg font-semibold text-on-surface">
               Approve: {active.fullName}
             </h3>
+            {active.googleBusinessUrl && (
+              <p className="mt-2 text-sm">
+                Google Business:{' '}
+                <a
+                  href={active.googleBusinessUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-primary break-all"
+                >
+                  {active.googleBusinessUrl}
+                </a>
+              </p>
+            )}
             <p className="mt-2 whitespace-pre-wrap text-sm text-on-surface-variant">
               {active.bio}
             </p>
