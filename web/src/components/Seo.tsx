@@ -6,7 +6,7 @@ const INDEXABLE_PATHS = new Set(['/', '/privacy', '/terms'])
 
 const BRAND = 'BeforeYes'
 const SITE_URL = (
-  import.meta.env.VITE_SITE_URL?.trim() || 'https://beforeyes.online'
+  import.meta.env.VITE_SITE_URL?.trim() || 'https://www.beforeyes.online'
 ).replace(/\/$/, '')
 
 type PageSeo = {

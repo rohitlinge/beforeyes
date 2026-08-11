@@ -10,7 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_FIREBASE_MEASUREMENT_ID?: string
   readonly VITE_FEEDBACK_URL?: string
   readonly VITE_FEEDBACK_EMAIL?: string
-  /** Canonical site origin, e.g. https://beforeyes.online (no trailing slash). */
+  /** Canonical site origin, e.g. https://www.beforeyes.online (no trailing slash). */
   readonly VITE_SITE_URL?: string
 }
 

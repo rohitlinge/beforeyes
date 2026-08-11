@@ -78,4 +78,4 @@ Allow: /privacy
 Allow: /terms
 Allow: /llms.txt
 
-Sitemap: https://beforeyes.online/sitemap.xml
+Sitemap: https://www.beforeyes.online/sitemap.xml
