@@ -1,52 +1,45 @@
 import { Link } from 'react-router-dom'
-import markUrl from '@/assets/beforeyes-mark.svg'
 
 type BrandMarkProps = {
   to?: string
   href?: string
   size?: 'sm' | 'md' | 'lg'
+  /** Kept for API compatibility; full logo already includes the wordmark. */
   showWordmark?: boolean
   className?: string
   onClick?: () => void
 }
 
 const SIZES = {
-  sm: { icon: 'h-7 w-7', text: 'text-base sm:text-lg' },
-  md: { icon: 'h-8 w-8', text: 'text-lg sm:text-xl' },
-  lg: { icon: 'h-10 w-10 sm:h-12 sm:w-12', text: 'text-2xl sm:text-3xl md:text-4xl' },
+  sm: 'h-9 w-auto sm:h-10',
+  md: 'h-12 w-auto',
+  lg: 'h-24 w-auto sm:h-28 md:h-32',
 } as const
 
+const LOGO_SRC = '/beforeyes-logo-2.png'
+
 /**
- * BeforeYes brand mark + wordmark. Prefer this over plain text for headers.
+ * BeforeYes brand logo. Prefer this over plain text for headers.
  */
 export function BrandMark({
   to,
   href,
   size = 'sm',
-  showWordmark = true,
   className = '',
   onClick,
 }: BrandMarkProps) {
-  const s = SIZES[size]
   const content = (
-    <>
-      <img
-        src={markUrl}
-        alt=""
-        width={48}
-        height={48}
-        className={`${s.icon} shrink-0 rounded-[28%]`}
-        decoding="async"
-      />
-      {showWordmark && (
-        <span className={`font-headline font-semibold tracking-tight text-primary ${s.text}`}>
-          BeforeYes
-        </span>
-      )}
-    </>
+    <img
+      src={LOGO_SRC}
+      alt="BeforeYes"
+      width={640}
+      height={360}
+      className={`${SIZES[size]} shrink-0 object-contain object-left`}
+      decoding="async"
+    />
   )
 
-  const classes = `inline-flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-lg ${className}`
+  const classes = `inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-lg ${className}`
 
   if (to) {
     return (
