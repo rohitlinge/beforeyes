@@ -27,15 +27,78 @@ const STEPS = [
   },
 ] as const
 
+const FAQS = [
+  {
+    question: 'Why use an app instead of just talking or texting on WhatsApp?',
+    answer:
+      'Live talks and text chats carry real-time pressure, leading to polite answers instead of honest ones. BeforeYes gives both of you a calm, private buffer to reflect deeply and unlock answers at the exact same time without fear of immediate reaction.',
+  },
+  {
+    question:
+      'Isn’t using an app for serious relationship topics too transactional?',
+    answer:
+      'BeforeYes isn’t meant to replace your conversation—it’s built to prepare you for it. It helps you both organize your non-negotiables calmly so your in-person discussion is focused, clear, and productive.',
+  },
+  {
+    question: 'How does the “Double-Blind Verdict” actually protect us?',
+    answer:
+      'If the verdict is a “No Match,” neither partner knows who tapped “No.” This removes asymmetric guilt and public confrontation, allowing both people to step back with complete dignity.',
+  },
+  {
+    question: 'Can one partner see my answers before submitting theirs?',
+    answer:
+      'No. Answers are locked in private and only reveal to both partners simultaneously once both sides have completed the phase. Neither person can adapt their answers based on the other’s.',
+  },
+  {
+    question:
+      'How do I introduce BeforeYes to my partner without making them defensive?',
+    answer:
+      'Frame it as mutual respect, not suspicion. A simple: “I care about our future together, and I want to make sure we’re completely aligned on the big things before we make a big commitment.”',
+  },
+  {
+    question: 'Is our personal data and relationship details secure?',
+    answer:
+      'Absolutely. BeforeYes is private by design—there are no public profiles, no social feeds, and your data is encrypted exclusively for your two-person lobby.',
+  },
+] as const
+
 export function LandingPage() {
   const { user, profile } = useAuth()
   const [scrolled, setScrolled] = useState(false)
+  const [openFaq, setOpenFaq] = useState<number | null>(0)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const id = 'beforeyes-faq-jsonld'
+    const existing = document.getElementById(id)
+    if (existing) existing.remove()
+
+    const script = document.createElement('script')
+    script.id = id
+    script.type = 'application/ld+json'
+    script.text = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: FAQS.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    })
+    document.head.appendChild(script)
+
+    return () => {
+      document.getElementById(id)?.remove()
+    }
   }, [])
 
   const primaryTo = user ? '/app' : '/signup'
@@ -179,6 +242,75 @@ export function LandingPage() {
               </li>
             ))}
           </ol>
+        </section>
+
+        {/* FAQ */}
+        <section
+          id="faq"
+          className="mx-auto max-w-3xl px-margin-mobile pb-20 md:px-8"
+          aria-labelledby="faq-heading"
+        >
+          <div className="text-center">
+            <p className="font-label text-sm font-semibold tracking-wide text-primary">
+              FAQ
+            </p>
+            <h2
+              id="faq-heading"
+              className="mt-2 font-headline text-2xl font-semibold tracking-tight text-on-surface sm:text-3xl"
+            >
+              Questions couples ask before they begin
+            </h2>
+            <p className="mx-auto mt-3 max-w-md text-on-surface-variant">
+              Straight answers about privacy, pressure, and how BeforeYes
+              protects dignity for both of you.
+            </p>
+          </div>
+
+          <div className="mt-10 divide-y divide-outline-variant/40 border-y border-outline-variant/40">
+            {FAQS.map((item, index) => {
+              const isOpen = openFaq === index
+              const panelId = `faq-panel-${index}`
+              const buttonId = `faq-button-${index}`
+
+              return (
+                <div key={item.question} className="py-1">
+                  <h3>
+                    <button
+                      type="button"
+                      id={buttonId}
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      onClick={() => setOpenFaq(isOpen ? null : index)}
+                      className="flex w-full items-start justify-between gap-4 py-4 text-left transition-colors hover:text-primary"
+                    >
+                      <span className="font-headline text-base font-semibold leading-snug text-on-surface sm:text-lg">
+                        {item.question}
+                      </span>
+                      <span
+                        aria-hidden
+                        className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 font-label text-lg leading-none text-primary transition-transform duration-300 ${
+                          isOpen ? 'rotate-45' : ''
+                        }`}
+                      >
+                        +
+                      </span>
+                    </button>
+                  </h3>
+                  <div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={buttonId}
+                    hidden={!isOpen}
+                    className="pb-5 pr-10"
+                  >
+                    <p className="max-w-prose leading-relaxed text-on-surface-variant">
+                      {item.answer}
+                    </p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </section>
 
         {/* Trust / dignity strip */}
