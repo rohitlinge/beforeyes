@@ -9,6 +9,8 @@ export type AnalyticsEventName =
   | 'questions_exchanged'
   | 'answers_exchanged'
   | 'verdict_revealed'
+  | 'result_score'
+  | 'report_downloaded'
   | 'result_match'
   | 'result_no_match'
 

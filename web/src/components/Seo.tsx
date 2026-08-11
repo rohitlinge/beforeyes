@@ -16,28 +16,28 @@ type PageSeo = {
 }
 
 const DEFAULT_KEYWORDS =
-  'ask before saying yes, avoid marriage regret, pre marriage questions, hard questions before marriage, serious couples conversation, double-blind relationship questions, BeforeYes, precommitment clarity, private couple Q&A, relationship decision before yes'
+  'ask before saying yes, avoid marriage regret, pre marriage questions, hard questions before marriage, serious couples conversation, relationship compatibility score, BeforeYes, precommitment clarity, private couple Q&A, agree disagree relationship questions'
 
 const PAGE_SEO: Record<string, PageSeo> = {
   '/': {
     title: 'Ask Before Saying Yes Or Regret It After Relationship | BeforeYes',
     description:
-      'Avoid post-marriage regret. BeforeYes gives serious couples a safe, double-blind space to ask hard questions and decide their future with total dignity.',
+      'Avoid post-marriage regret. BeforeYes gives serious couples a private space to ask hard questions, mark Agree or Disagree, and see a clear compatibility percentage—with dignity.',
     keywords: `${DEFAULT_KEYWORDS}, ask before saying yes or regret it after, post marriage regret, decide before commitment`,
   },
   '/privacy': {
     title: 'Privacy Policy | BeforeYes — Private Couple Conversations Stay Confidential',
     description:
-      'How BeforeYes protects your account, private room questions, answers, and double-blind verdicts. Built for adults who value dignity and confidentiality before commitment.',
+      'How BeforeYes protects your account, private room questions, answers, and Agree/Disagree ratings. Built for adults who value dignity and confidentiality before commitment.',
     keywords:
       'BeforeYes privacy policy, private couple conversations, secure relationship questions, data privacy before marriage, confidential Q&A for couples',
   },
   '/terms': {
     title: 'Terms of Use | BeforeYes — Rules for Serious Couples',
     description:
-      'BeforeYes terms for our private two-player clarity tool. Adults only, consensual use, and double-blind Yes/No verdicts—not dating, counseling, or public matching.',
+      'BeforeYes terms for our private two-player clarity tool. Adults only, consensual use, Agree/Disagree ratings, and a shared compatibility score—not dating or counseling.',
     keywords:
-      'BeforeYes terms of use, relationship clarity tool terms, private couple Q&A rules, double-blind verdict terms',
+      'BeforeYes terms of use, relationship clarity tool terms, private couple Q&A rules, compatibility score terms',
   },
   '/feedback': {
     title: `Feedback — ${BRAND}`,
@@ -48,7 +48,7 @@ const PAGE_SEO: Record<string, PageSeo> = {
   '/login': {
     title: `Log in — ${BRAND}`,
     description:
-      'Log in to BeforeYes to continue your private, double-blind conversation with your partner.',
+      'Log in to BeforeYes to continue your private conversation and compatibility scoring with your partner.',
     keywords: 'BeforeYes login, sign in BeforeYes',
   },
   '/signup': {
@@ -87,8 +87,8 @@ function seoForPath(pathname: string): PageSeo {
     return {
       title: `Private session — ${BRAND}`,
       description:
-        'Private BeforeYes session — questions, answers, and a double-blind verdict between two partners.',
-      keywords: 'BeforeYes private session, double-blind verdict',
+        'Private BeforeYes session — questions, answers, Agree/Disagree ratings, and a shared compatibility percentage.',
+      keywords: 'BeforeYes private session, relationship compatibility score',
     }
   }
   return PAGE_SEO['/']

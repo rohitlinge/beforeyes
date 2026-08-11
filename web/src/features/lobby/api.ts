@@ -32,6 +32,11 @@ function requireDb() {
 function mapRoom(roomId: string, data: Record<string, unknown>): Room {
   const createdAt = data.createdAt as { toMillis?: () => number } | number | null
   const updatedAt = data.updatedAt as { toMillis?: () => number } | number | null
+  const scoreRaw = data.compatibilityScore
+  const compatibilityScore =
+    typeof scoreRaw === 'number' && Number.isFinite(scoreRaw)
+      ? Math.max(0, Math.min(100, Math.round(scoreRaw)))
+      : null
 
   return {
     roomId,
@@ -62,8 +67,13 @@ function mapRoom(roomId: string, data: Record<string, unknown>): Room {
     partnerBAnsweredCount: Number(data.partnerBAnsweredCount ?? 0),
     partnerAAnswersDelivered: Boolean(data.partnerAAnswersDelivered),
     partnerBAnswersDelivered: Boolean(data.partnerBAnswersDelivered),
-    partnerAVerdictSubmitted: Boolean(data.partnerAVerdictSubmitted),
-    partnerBVerdictSubmitted: Boolean(data.partnerBVerdictSubmitted),
+    partnerAAgreementsSubmitted: Boolean(
+      data.partnerAAgreementsSubmitted ?? data.partnerAVerdictSubmitted,
+    ),
+    partnerBAgreementsSubmitted: Boolean(
+      data.partnerBAgreementsSubmitted ?? data.partnerBVerdictSubmitted,
+    ),
+    compatibilityScore,
     result: (data.result as RoomResult) ?? null,
     closedBy: data.closedBy ? String(data.closedBy) : null,
     createdAt:

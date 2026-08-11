@@ -133,7 +133,63 @@ export const exchangeAnswers = onCall(async (request) => {
 })
 
 /**
- * Double-blind result. Never writes who said No — only match | no_match.
+ * Compatibility score from both partners' Agree/Disagree summaries.
+ * Per-question ratings stay in privateAgreements; only counts are used here.
+ */
+export const resolveCompatibility = onCall(async (request) => {
+  assertAuth(request.auth?.uid)
+  const roomId = String(request.data?.roomId ?? '')
+  if (!roomId) throw new HttpsError('invalid-argument', 'roomId required.')
+
+  const { ref, room } = await requireMember(roomId, request.auth.uid)
+  if (!room.partnerB) {
+    throw new HttpsError('failed-precondition', 'Partner required.')
+  }
+
+  if (typeof room.compatibilityScore === 'number') {
+    return { ok: true, compatibilityScore: room.compatibilityScore }
+  }
+
+  const aSubmitted =
+    room.partnerAAgreementsSubmitted === true ||
+    room.partnerAVerdictSubmitted === true
+  const bSubmitted =
+    room.partnerBAgreementsSubmitted === true ||
+    room.partnerBVerdictSubmitted === true
+  if (!aSubmitted || !bSubmitted) {
+    throw new HttpsError('failed-precondition', 'Both partners must submit ratings.')
+  }
+
+  const [aSum, bSum] = await Promise.all([
+    db.doc(`rooms/${roomId}/agreementSummaries/${room.partnerA}`).get(),
+    db.doc(`rooms/${roomId}/agreementSummaries/${room.partnerB}`).get(),
+  ])
+
+  if (!aSum.exists || !bSum.exists) {
+    throw new HttpsError('failed-precondition', 'Agreement summaries missing.')
+  }
+
+  const a = aSum.data()!
+  const b = bSum.data()!
+  const aAgree = Number(a.agreeCount ?? 0)
+  const aTotal = Number(a.total ?? 0)
+  const bAgree = Number(b.agreeCount ?? 0)
+  const bTotal = Number(b.total ?? 0)
+  const total = aTotal + bTotal
+  const compatibilityScore =
+    total <= 0 ? 0 : Math.round((100 * (aAgree + bAgree)) / total)
+
+  await ref.update({
+    compatibilityScore,
+    status: 'result_revealed',
+    updatedAt: FieldValue.serverTimestamp(),
+  })
+
+  return { ok: true, compatibilityScore }
+})
+
+/**
+ * @deprecated Legacy Yes/No match. Prefer resolveCompatibility.
  */
 export const resolveVerdict = onCall(async (request) => {
   assertAuth(request.auth?.uid)
@@ -143,6 +199,10 @@ export const resolveVerdict = onCall(async (request) => {
   const { ref, room } = await requireMember(roomId, request.auth.uid)
   if (!room.partnerB) {
     throw new HttpsError('failed-precondition', 'Partner required.')
+  }
+
+  if (typeof room.compatibilityScore === 'number') {
+    return { ok: true, result: null, compatibilityScore: room.compatibilityScore }
   }
 
   if (room.result === 'match' || room.result === 'no_match') {

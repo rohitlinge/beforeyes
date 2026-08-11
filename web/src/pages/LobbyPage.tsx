@@ -182,7 +182,8 @@ export function LobbyPage() {
                 Lists swap only when you both tap Ready; answers unlock the same way.
               </li>
               <li>
-                The Yes/No verdict is double-blind. No Match never reveals who said No.
+                After answers swap, mark Agree or Disagree on each one—no Maybe.
+                You both get a clear compatibility percentage and can download a report.
               </li>
               <li>Take your time and be honest. This space is only for the two of you.</li>
             </ol>

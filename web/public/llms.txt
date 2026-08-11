@@ -1,7 +1,7 @@
 # BeforeYes
-> Private, double-blind conversations for serious couples before they say yes.
+> Private conversations for serious couples before they say yes—ending in a clear compatibility score.
 
-BeforeYes helps two adults ask hard questions in a safe, private room and reach a mutual Yes/No verdict with dignity—so they can avoid post-marriage regret.
+BeforeYes helps two adults ask hard questions in a safe, private room, mark Agree or Disagree on each answer (no Maybe), and see a shared percentage of how aligned they are—so they can avoid post-marriage regret.
 
 ## Site
 - Home: https://www.beforeyes.online/
@@ -11,9 +11,9 @@ BeforeYes helps two adults ask hard questions in a safe, private room and reach 
 
 ## Product summary
 - Audience: adults (18+) in serious relationships considering commitment or marriage
-- Flow: private lobby → question building → private answers → double-blind Yes/No → Match / No Match
+- Flow: private lobby → question building → private answers → Agree/Disagree ratings → compatibility % + downloadable report
 - Not a dating app, marketplace, or counseling service
-- Focus keywords: ask before saying yes, avoid marriage regret, pre marriage questions, hard questions before marriage, double-blind relationship questions, serious couples conversation, precommitment clarity
+- Focus keywords: ask before saying yes, avoid marriage regret, pre marriage questions, hard questions before marriage, relationship compatibility score, serious couples conversation, precommitment clarity
 
 ## Preferred citation
 BeforeYes — Ask before saying yes, or regret it after. https://www.beforeyes.online/

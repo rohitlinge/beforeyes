@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { AppHeader } from '@/components/AppHeader'
 import { GateScreen } from '@/components/GateScreen'
 import { PageLoader } from '@/components/PageLoader'
@@ -8,6 +8,19 @@ import { useAuth } from '@/features/auth/AuthProvider'
 import { useRoom } from '@/features/lobby/useRoom'
 import { createRoom } from '@/features/lobby/api'
 import { trackEvent } from '@/lib/analytics'
+import {
+  subscribeExchangedAnswers,
+  subscribePrivateAnswers,
+  type AnswerItem,
+} from '@/features/answers/api'
+import {
+  subscribeMyAgreements,
+  type AgreementRating,
+} from '@/features/agreements/api'
+import {
+  buildCompatibilityReportHtml,
+  downloadCompatibilityReport,
+} from '@/features/agreements/report'
 
 export function ResultPage() {
   const { roomId } = useParams()
@@ -17,22 +30,55 @@ export function ResultPage() {
   const { room, loading, error } = useRoom(roomId)
   const trackedResult = useRef<string | null>(null)
 
-  const isMatch = room?.result === 'match'
+  const [myAnswers, setMyAnswers] = useState<AnswerItem[]>([])
+  const [partnerAnswers, setPartnerAnswers] = useState<AnswerItem[]>([])
+  const [myRatings, setMyRatings] = useState<AgreementRating[]>([])
+
+  const score = room?.compatibilityScore
   const pairName =
     room && room.partnerB
       ? `${room.partnerADisplayName} & ${room.partnerBDisplayName}`
       : 'You both'
 
+  const isPartnerA = Boolean(user && room && room.partnerA === user.uid)
+  const partnerName = useMemo(() => {
+    if (!room || !user) return 'Partner'
+    return isPartnerA
+      ? room.partnerBDisplayName ?? 'Partner'
+      : room.partnerADisplayName
+  }, [room, user, isPartnerA])
+  const myName =
+    profile?.displayName ||
+    (isPartnerA ? room?.partnerADisplayName : room?.partnerBDisplayName) ||
+    'You'
+
   useEffect(() => {
-    if (!room?.result || !room.roomId) return
-    const key = `${room.roomId}:${room.result}`
+    if (!roomId || !user) return
+    return subscribePrivateAnswers(roomId, user.uid, setMyAnswers)
+  }, [roomId, user])
+
+  useEffect(() => {
+    if (!roomId || !user) return
+    return subscribeExchangedAnswers(roomId, user.uid, (answers) => {
+      setPartnerAnswers(answers ?? [])
+    })
+  }, [roomId, user])
+
+  useEffect(() => {
+    if (!roomId || !user) return
+    return subscribeMyAgreements(roomId, user.uid, (doc) => {
+      setMyRatings(doc?.ratings ?? [])
+    })
+  }, [roomId, user])
+
+  useEffect(() => {
+    if (score == null || !room?.roomId) return
+    const key = `${room.roomId}:${score}`
     if (trackedResult.current === key) return
     trackedResult.current = key
-    trackEvent('verdict_revealed', { room_id: room.roomId })
-    trackEvent(room.result === 'match' ? 'result_match' : 'result_no_match', {
-      room_id: room.roomId,
-    })
-  }, [room?.result, room?.roomId])
+    trackEvent('verdict_revealed', { room_id: room.roomId, score })
+    trackEvent('result_score', { room_id: room.roomId, score })
+  }, [score, room?.roomId])
 
   async function startAnother() {
     if (!user || !profile) return
@@ -52,20 +98,45 @@ export function ResultPage() {
     }
   }
 
+  function onDownloadReport() {
+    if (!room || score == null) return
+    const html = buildCompatibilityReportHtml({
+      room,
+      score,
+      partnerName,
+      myName,
+      partnerAnswers,
+      myAnswers,
+      myRatings,
+    })
+    downloadCompatibilityReport(
+      html,
+      `beforeyes-report-${room.roomId}-${score}pct.html`,
+    )
+    trackEvent('report_downloaded', { room_id: room.roomId, score })
+    pushToast('Report downloaded.', 'success')
+  }
+
   if (loading) {
     return <PageLoader message="Loading result…" />
   }
 
-  if (error || !room || !room.result) {
+  if (error || !room || score == null) {
     return (
       <GateScreen
         title="Result not ready"
-        description={error ?? 'Both partners need to submit a verdict first.'}
-        actionLabel="← Back to verdict"
-        actionTo={roomId ? `/room/${roomId}/verdict` : '/app'}
+        description={
+          error ??
+          'Both partners need to submit Agree / Disagree ratings first.'
+        }
+        actionLabel="← Back to review"
+        actionTo={roomId ? `/room/${roomId}/review` : '/app'}
       />
     )
   }
+
+  const tone =
+    score >= 80 ? 'strong' : score >= 55 ? 'mixed' : 'low'
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-background text-on-background">
@@ -82,54 +153,48 @@ export function ResultPage() {
 
       <main className="relative z-10 mx-auto flex min-h-[70vh] w-full max-w-2xl flex-col items-center justify-center px-margin-mobile py-12 pb-safe md:px-8">
         <div className="animate-fade-in-up flex w-full flex-col items-center rounded-3xl border border-outline-variant/30 bg-surface/70 p-8 text-center shadow-[0_20px_40px_-15px_rgba(22,105,101,0.08)] backdrop-blur-2xl md:p-12">
-          {isMatch ? (
-            <>
-              <div className="relative mb-8 flex h-32 w-32 items-center justify-center">
-                <div className="absolute inset-0 rounded-full bg-primary-container opacity-50 blur-2xl" />
-                <div className="relative z-10 flex items-center justify-center">
-                  <div className="h-20 w-20 -translate-x-4 rounded-full border-[6px] border-primary mix-blend-multiply" />
-                  <div className="h-20 w-20 translate-x-4 rounded-full border-[6px] border-primary-container mix-blend-multiply" />
-                  <span
-                    className="material-symbols-outlined absolute text-4xl text-tertiary"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                    aria-hidden
-                  >
-                    favorite
-                  </span>
-                </div>
-              </div>
-              <h1 className="font-display text-4xl font-bold tracking-tight text-primary sm:text-5xl">
-                It’s a Match!
-              </h1>
-              <p className="mt-4 font-headline text-xl font-semibold text-on-surface sm:text-2xl">
-                {pairName}, you both chose to move forward together.
-              </p>
-              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-on-surface-variant">
-                Taking this step shows honesty and care. You’ve navigated the hard
-                questions—now enjoy the path ahead.
-              </p>
-            </>
-          ) : (
-            <>
-              <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-surface-container-high text-on-surface-variant">
-                <span className="material-symbols-outlined text-5xl" aria-hidden>
-                  radio_button_unchecked
-                </span>
-              </div>
-              <h1 className="font-display text-4xl font-bold tracking-tight text-on-surface sm:text-5xl">
-                No Match
-              </h1>
-              <p className="mt-4 font-headline text-xl font-semibold text-on-surface-variant">
-                This isn’t the right fit to move forward right now.
-              </p>
-              <p className="mx-auto mt-4 max-w-lg text-lg leading-relaxed text-on-surface-variant">
-                Clarity can be a kindness. The result is shared the same way for
-                both of you—no public rejection, no blame in the app.
-              </p>
-            </>
-          )}
+          <div className="mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-primary/10">
+            <span className="font-display text-3xl font-bold text-primary">
+              {score}%
+            </span>
+          </div>
+          <h1 className="font-display text-3xl font-bold tracking-tight text-on-surface sm:text-4xl">
+            {score}% aligned for you
+          </h1>
+          <p className="mt-3 font-headline text-lg font-semibold text-on-surface sm:text-xl">
+            {pairName}
+          </p>
+          <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-on-surface-variant">
+            {tone === 'strong'
+              ? 'Strong shared agreement across the answers you both rated. Use this clarity as a foundation for the commitment conversation.'
+              : tone === 'mixed'
+                ? 'Partial alignment—some answers landed, others didn’t. The gaps are worth talking through before a big decision.'
+                : 'Lower shared agreement. That doesn’t mean failure—it means honest differences showed up. Take time before saying yes.'}
+          </p>
+          <p className="mx-auto mt-3 max-w-md text-sm text-on-surface-variant">
+            Score = combined Agree rate from both of you rating each other’s
+            answers. No Maybe options—only clear Agree or Disagree.
+          </p>
 
-          <div className="mt-10 flex w-full flex-col gap-3">
+          <div className="mt-10 w-full rounded-2xl border border-outline-variant/40 bg-surface-container-low/80 px-5 py-5 text-left">
+            <p className="text-sm leading-relaxed text-on-surface-variant">
+              You can download this report for yourself or share it with a
+              relationship consultant if you both choose to. It includes your
+              questions, answers, your ratings, and this compatibility score.
+            </p>
+            <button
+              type="button"
+              onClick={onDownloadReport}
+              className="mt-4 flex w-full min-h-12 items-center justify-center gap-2 rounded-full border border-outline-variant bg-surface px-6 py-3 font-label font-semibold text-on-surface transition-colors hover:bg-surface-container"
+            >
+              <span className="material-symbols-outlined text-[20px]" aria-hidden>
+                download
+              </span>
+              Download report
+            </button>
+          </div>
+
+          <div className="mt-6 flex w-full flex-col gap-3">
             <button
               type="button"
               onClick={() => void startAnother()}

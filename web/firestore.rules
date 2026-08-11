@@ -37,6 +37,7 @@ service cloud.firestore {
         && request.resource.data.get('partnerBReadyAnswers', false) == resource.data.get('partnerBReadyAnswers', false)
         && request.resource.data.get('partnerBAnsweredCount', 0) == resource.data.get('partnerBAnsweredCount', 0)
         && request.resource.data.get('partnerBAnswersDelivered', false) == resource.data.get('partnerBAnswersDelivered', false)
+        && request.resource.data.get('partnerBAgreementsSubmitted', false) == resource.data.get('partnerBAgreementsSubmitted', false)
         && request.resource.data.get('partnerBVerdictSubmitted', false) == resource.data.get('partnerBVerdictSubmitted', false)
       ) || (
         request.auth.uid == resource.data.partnerB
@@ -46,20 +47,36 @@ service cloud.firestore {
         && request.resource.data.get('partnerAReadyAnswers', false) == resource.data.get('partnerAReadyAnswers', false)
         && request.resource.data.get('partnerAAnsweredCount', 0) == resource.data.get('partnerAAnsweredCount', 0)
         && request.resource.data.get('partnerAAnswersDelivered', false) == resource.data.get('partnerAAnswersDelivered', false)
+        && request.resource.data.get('partnerAAgreementsSubmitted', false) == resource.data.get('partnerAAgreementsSubmitted', false)
         && request.resource.data.get('partnerAVerdictSubmitted', false) == resource.data.get('partnerAVerdictSubmitted', false)
       );
     }
 
-    // Prefer Functions for delivered/result; client fallback still allowed until Blaze.
+    // Prefer Functions for score; client fallback when both agreement summaries exist.
     function clientCannotForgeResultAlone() {
-      // Result can only change from null → match|no_match when both verdicts submitted.
-      return resource.data.get('result', null) == request.resource.data.get('result', null)
-        || (
-          resource.data.get('result', null) == null
-          && request.resource.data.result in ['match', 'no_match']
-          && resource.data.partnerAVerdictSubmitted == true
-          && resource.data.partnerBVerdictSubmitted == true
-        );
+      return (
+        resource.data.get('compatibilityScore', null) == request.resource.data.get('compatibilityScore', null)
+        && resource.data.get('result', null) == request.resource.data.get('result', null)
+      ) || (
+        resource.data.get('compatibilityScore', null) == null
+        && request.resource.data.compatibilityScore is int
+        && request.resource.data.compatibilityScore >= 0
+        && request.resource.data.compatibilityScore <= 100
+        && (
+          resource.data.get('partnerAAgreementsSubmitted', false) == true
+          || resource.data.get('partnerAVerdictSubmitted', false) == true
+        )
+        && (
+          resource.data.get('partnerBAgreementsSubmitted', false) == true
+          || resource.data.get('partnerBVerdictSubmitted', false) == true
+        )
+      ) || (
+        // Legacy match/no_match rooms
+        resource.data.get('result', null) == null
+        && request.resource.data.result in ['match', 'no_match']
+        && resource.data.get('partnerAVerdictSubmitted', false) == true
+        && resource.data.get('partnerBVerdictSubmitted', false) == true
+      );
     }
 
     function canCloseRoom() {
@@ -69,6 +86,7 @@ service cloud.firestore {
         && partnersUnchanged()
         && request.resource.data.closedBy == request.auth.uid
         && request.resource.data.result == resource.data.result
+        && request.resource.data.get('compatibilityScore', null) == resource.data.get('compatibilityScore', null)
         && request.resource.data.get('partnerAQuestionsDelivered', false) == resource.data.get('partnerAQuestionsDelivered', false)
         && request.resource.data.get('partnerBQuestionsDelivered', false) == resource.data.get('partnerBQuestionsDelivered', false)
         && request.resource.data.get('partnerAAnswersDelivered', false) == resource.data.get('partnerAAnswersDelivered', false)
@@ -219,7 +237,27 @@ service cloud.firestore {
           && request.resource.data.keys().hasAll(['fromUid', 'answers', 'exchangedAt']);
       }
 
-      // Never readable by partner
+      // Never readable by partner — detailed Agree/Disagree per answer
+      match /privateAgreements/{uid} {
+        allow read, write: if isSignedIn()
+          && request.auth.uid == uid
+          && isRoomMember(roomId)
+          && roomDoc(roomId).status != 'closed';
+      }
+
+      // Counts only — readable by both so score can resolve without revealing items
+      match /agreementSummaries/{uid} {
+        allow read: if isRoomMember(roomId);
+        allow create, update: if isSignedIn()
+          && request.auth.uid == uid
+          && isRoomMember(roomId)
+          && roomDoc(roomId).status != 'closed'
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.keys().hasAll(['uid', 'agreeCount', 'total', 'submittedAt']);
+        allow delete: if false;
+      }
+
+      // Never readable by partner (legacy Yes/No)
       match /privateVerdicts/{uid} {
         allow read, write: if isSignedIn()
           && request.auth.uid == uid

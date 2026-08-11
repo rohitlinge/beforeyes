@@ -19,8 +19,9 @@ export function TermsPage() {
       <h2>What the product is</h2>
       <p>
         BeforeYes is a private two-player tool: create or join a
-        room, build questions, answer, and submit a double-blind Yes/No verdict.
-        Results show Match or No Match only. It is not legal, medical, or
+        room, build questions, answer, then mark Agree or Disagree on each answer
+        to reveal a shared compatibility percentage. You may download a session
+        report for yourselves or a consultant. It is not legal, medical, or
         relationship counseling advice.
       </p>
 
@@ -56,8 +57,8 @@ export function TermsPage() {
       <h2>Disclaimers</h2>
       <p>
         The app is provided “as is” without warranties of any kind. We are not
-        liable for relationship outcomes, decisions you make after a Match or No
-        Match, or disputes between partners. To the fullest extent permitted by
+        liable for relationship outcomes, decisions you make after a compatibility
+        score or downloaded report, or disputes between partners. To the fullest extent permitted by
         law, our liability is limited to the amount you paid us for the service in
         the last 12 months (currently zero for the free launch).
       </p>

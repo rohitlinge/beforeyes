@@ -22,8 +22,8 @@ const STEPS = [
   },
   {
     step: '04',
-    title: 'Double-Blind Verdict',
-    body: 'Each person taps Yes or No privately. You only see Match or No Match—never who said No.',
+    title: 'Alignment Score',
+    body: 'After reading, mark Agree or Disagree on each answer—no Maybe. You both get a clear % of how aligned you are.',
   },
 ] as const
 
@@ -40,9 +40,14 @@ const FAQS = [
       'BeforeYes isn’t meant to replace your conversation—it’s built to prepare you for it. It helps you both organize your non-negotiables calmly so your in-person discussion is focused, clear, and productive.',
   },
   {
-    question: 'How does the “Double-Blind Verdict” actually protect us?',
+    question: 'How does the compatibility score work?',
     answer:
-      'If the verdict is a “No Match,” neither partner knows who tapped “No.” This removes asymmetric guilt and public confrontation, allowing both people to step back with complete dignity.',
+      'After answers swap, each of you marks Agree or Disagree on every partner answer. When both finish, BeforeYes combines those ratings into a shared percentage—how aligned you are—not a blunt Yes/No or Match/No Match.',
+  },
+  {
+    question: 'Why isn’t there a Maybe option?',
+    answer:
+      'Soft 50/50 agreement often becomes a bigger issue later in a relationship. Agree or Disagree keeps the score honest and forces clarity on what you can truly live with.',
   },
   {
     question: 'Can one partner see my answers before submitting theirs?',
@@ -54,6 +59,11 @@ const FAQS = [
       'How do I introduce BeforeYes to my partner without making them defensive?',
     answer:
       'Frame it as mutual respect, not suspicion. A simple: “I care about our future together, and I want to make sure we’re completely aligned on the big things before we make a big commitment.”',
+  },
+  {
+    question: 'Can we download a report of our session?',
+    answer:
+      'Yes. After your score is revealed, you can download a report for yourself or share it with a relationship consultant if you both choose to.',
   },
   {
     question: 'Is our personal data and relationship details secure?',
@@ -177,7 +187,7 @@ export function LandingPage() {
           </h1>
           <p className="animate-fade-in-up animation-delay-200 mx-auto mt-5 max-w-lg font-body text-base leading-relaxed text-on-surface-variant sm:text-lg">
             A private two-player space for serious couples to ask the hard
-            questions—and decide with dignity.
+            questions—then see how aligned you are as a clear percentage.
           </p>
           <div className="animate-fade-in-up animation-delay-300 mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <Link
@@ -212,7 +222,7 @@ export function LandingPage() {
               How it works
             </p>
             <h2 className="mt-2 font-headline text-2xl font-semibold tracking-tight text-on-surface sm:text-3xl">
-              Four calm steps. One clear decision.
+              Four calm steps. One clear alignment score.
             </h2>
             <p className="mx-auto mt-3 max-w-md text-on-surface-variant">
               Built for the conversations couples usually avoid—money, family,
@@ -325,8 +335,9 @@ export function LandingPage() {
             </h2>
             <p className="relative mt-3 max-w-xl leading-relaxed text-on-surface-variant">
               Questions and answers stay private until you both choose to
-              exchange. The final verdict is double-blind—so a “No” never turns
-              into a public confrontation.
+              exchange. Then you mark Agree or Disagree on each answer—no Maybe—
+              and see a shared compatibility percentage you can download for
+              yourselves or a relationship consultant.
             </p>
             <Link
               to={primaryTo}

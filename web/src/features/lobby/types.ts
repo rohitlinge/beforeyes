@@ -10,6 +10,7 @@ export type RoomStatus =
   | 'result_revealed'
   | 'closed'
 
+/** @deprecated Legacy Yes/No result — new rooms use compatibilityScore. */
 export type RoomResult = 'match' | 'no_match' | null
 
 export type Room = {
@@ -35,8 +36,12 @@ export type Room = {
   partnerBAnsweredCount: number
   partnerAAnswersDelivered: boolean
   partnerBAnswersDelivered: boolean
-  partnerAVerdictSubmitted: boolean
-  partnerBVerdictSubmitted: boolean
+  /** Both partners finished Agree/Disagree ratings on each other’s answers. */
+  partnerAAgreementsSubmitted: boolean
+  partnerBAgreementsSubmitted: boolean
+  /** Shared Agree % (0–100). Null until both partners submit ratings. */
+  compatibilityScore: number | null
+  /** Legacy field for older rooms; prefer compatibilityScore. */
   result: RoomResult
   closedBy: string | null
   createdAt: number | null
@@ -75,7 +80,7 @@ export function statusLabel(status: RoomStatus): string {
     case 'answers_exchanged':
       return 'Reviewing answers'
     case 'verdict_pending':
-      return 'Verdict'
+      return 'Scoring alignment'
     case 'result_revealed':
       return 'Completed'
     case 'closed':
@@ -103,8 +108,12 @@ export const ANSWER_PHASE_DEFAULTS = {
   partnerBAnswersDelivered: false,
 } as const
 
-export const VERDICT_PHASE_DEFAULTS = {
-  partnerAVerdictSubmitted: false,
-  partnerBVerdictSubmitted: false,
+export const SCORE_PHASE_DEFAULTS = {
+  partnerAAgreementsSubmitted: false,
+  partnerBAgreementsSubmitted: false,
+  compatibilityScore: null,
   result: null,
 } as const
+
+/** @deprecated Use SCORE_PHASE_DEFAULTS */
+export const VERDICT_PHASE_DEFAULTS = SCORE_PHASE_DEFAULTS

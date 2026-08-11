@@ -24,7 +24,7 @@ export function PrivacyPolicyPage() {
         </li>
         <li>
           <strong className="text-on-surface">Room content:</strong> questions,
-          answers, and verdict choices you submit inside a private room, stored
+          answers, and Agree/Disagree ratings you submit inside a private room, stored
           in Cloud Firestore for that session.
         </li>
         <li>
@@ -37,7 +37,7 @@ export function PrivacyPolicyPage() {
 
       <h2>How we use information</h2>
       <ul>
-        <li>To run the two-player room loop (lobby → questions → answers → verdict).</li>
+        <li>To run the two-player room loop (lobby → questions → answers → alignment score).</li>
         <li>To keep private drafts private until both partners are ready to exchange.</li>
         <li>To improve reliability and fix bugs.</li>
       </ul>
@@ -46,8 +46,9 @@ export function PrivacyPolicyPage() {
       <p>
         We do not sell your personal data. Room content is shared only with the
         other member of that room, according to the product rules (for example,
-        questions and answers unlock together; a No Match result never reveals who
-        said No).
+        questions and answers unlock together; detailed Agree/Disagree ratings stay
+        private to each partner while a shared compatibility percentage is revealed
+        when both finish).
       </p>
       <p>
         Infrastructure is provided by Google Firebase (Authentication, Firestore,
@@ -75,8 +76,8 @@ export function PrivacyPolicyPage() {
       <h2>Security</h2>
       <p>
         We use Firebase Authentication and Firestore security rules so that private
-        drafts and verdicts are not readable by the other partner before the
-        intended exchange. No system is perfect—only share what you are comfortable
+        drafts and per-answer ratings are not readable by the other partner before
+        the intended exchange. No system is perfect—only share what you are comfortable
         putting in writing with your partner.
       </p>
 
