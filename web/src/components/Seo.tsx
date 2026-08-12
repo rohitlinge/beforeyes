@@ -6,11 +6,13 @@ function isIndexablePath(pathname: string): boolean {
   if (pathname === '/' || pathname === '/privacy' || pathname === '/terms') {
     return true
   }
-  if (pathname === '/relationship-therapists') return true
   if (
-    pathname.startsWith('/relationship-therapists/') &&
-    pathname !== '/relationship-therapists/register'
+    pathname === '/relationship-therapists' ||
+    pathname === '/relationship-therapists/register'
   ) {
+    return true
+  }
+  if (pathname.startsWith('/relationship-therapists/')) {
     return true
   }
   return false
@@ -52,18 +54,20 @@ const PAGE_SEO: Record<string, PageSeo> = {
       'BeforeYes terms of use, relationship clarity tool terms, private couple Q&A rules, compatibility score terms',
   },
   '/relationship-therapists': {
-    title: 'Relationship Therapists Directory | BeforeYes',
+    title:
+      'Find Verified Relationship Therapists for Serious Couples | BeforeYes',
     description:
-      'Browse verified relationship therapists who help serious couples prepare for commitment. Admin-approved profiles only.',
+      'Browse admin-verified relationship therapists and pre-marital counselors who help serious couples prepare for commitment. Compare specialties, location, and credentials on BeforeYes.',
     keywords:
-      'relationship therapists, pre-marital counselors, couples therapists directory, BeforeYes therapists',
+      'relationship therapists, pre-marital counselor, couples therapist near me, marriage counselor directory, verified relationship therapist, pre marriage counseling, serious couples therapist, BeforeYes therapists',
   },
   '/relationship-therapists/register': {
-    title: `Register as a Relationship Therapist — ${BRAND}`,
+    title:
+      'Register as a Relationship Therapist — List Your Practice | BeforeYes',
     description:
-      'Apply to list your relationship therapy practice on BeforeYes. Profiles publish only after admin review.',
+      'List your relationship therapy or pre-marital counseling practice on BeforeYes. Reach serious couples preparing for commitment. Profiles publish after Google Business verification and admin review.',
     keywords:
-      'register relationship therapist, BeforeYes therapist application',
+      'register as relationship therapist, list couples therapy practice, pre-marital counselor directory listing, join BeforeYes therapists, therapist Google Business Profile verification',
   },
   '/admin/relationship-therapists': {
     title: `Therapist Admin — ${BRAND}`,
@@ -209,10 +213,18 @@ export function Seo() {
     ensurePropertyMeta('og:title').setAttribute('content', page.title)
     ensurePropertyMeta('og:description').setAttribute('content', page.description)
     ensurePropertyMeta('og:url').setAttribute('content', url)
+    ensurePropertyMeta('og:image').setAttribute(
+      'content',
+      `${SITE_URL}/beforeyes-logo.png`,
+    )
 
     ensureNamedMeta('twitter:card').setAttribute('content', 'summary_large_image')
     ensureNamedMeta('twitter:title').setAttribute('content', page.title)
     ensureNamedMeta('twitter:description').setAttribute('content', page.description)
+    ensureNamedMeta('twitter:image').setAttribute(
+      'content',
+      `${SITE_URL}/beforeyes-logo.png`,
+    )
 
     const canonical = ensureCanonical()
     if (indexable) {

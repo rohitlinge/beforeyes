@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Atmosphere } from '@/components/Atmosphere'
 import { BrandMark } from '@/components/BrandMark'
@@ -7,8 +7,10 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { submitConsultantApplication } from '@/features/consultants/api'
 import {
   THERAPISTS_PATH,
+  THERAPISTS_REGISTER_PATH,
 } from '@/features/consultants/paths'
 import { SPECIALTY_OPTIONS, slugifyName } from '@/features/consultants/types'
+import { setJsonLd, siteUrl } from '@/lib/seoJsonLd'
 
 const LANG_OPTIONS = [
   'English',
@@ -32,6 +34,21 @@ const STEPS = [
   { id: 'contact', label: 'Contact' },
 ] as const
 
+const REGISTER_FAQ = [
+  {
+    q: 'Who can register as a relationship therapist on BeforeYes?',
+    a: 'Licensed or experienced relationship therapists, marriage and family therapists, and pre-marital counselors who work with serious couples preparing for commitment.',
+  },
+  {
+    q: 'Why is a Google Business Profile required?',
+    a: 'It is our primary trust signal. We verify listings through Google before publishing so couples can trust that profiles are real practices.',
+  },
+  {
+    q: 'When will my profile go live?',
+    a: 'After you submit, an admin reviews your details. Once approved, your public page appears in the BeforeYes relationship therapists directory.',
+  },
+] as const
+
 export function ConsultantRegisterPage() {
   const [step, setStep] = useState(0)
   const [fullName, setFullName] = useState('')
@@ -52,6 +69,65 @@ export function ConsultantRegisterPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [doneSlug, setDoneSlug] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (doneSlug) {
+      setJsonLd('therapists-register-schema', null)
+      setJsonLd('therapists-register-faq', null)
+      setJsonLd('therapists-register-breadcrumb', null)
+      return
+    }
+
+    const pageUrl = siteUrl(THERAPISTS_REGISTER_PATH)
+    setJsonLd('therapists-register-breadcrumb', {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: siteUrl('/'),
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Relationship therapists',
+          item: siteUrl(THERAPISTS_PATH),
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Register',
+          item: pageUrl,
+        },
+      ],
+    })
+    setJsonLd('therapists-register-schema', {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Register as a Relationship Therapist on BeforeYes',
+      description:
+        'Apply to list your relationship therapy or pre-marital counseling practice on BeforeYes for serious couples preparing for commitment.',
+      url: pageUrl,
+      isPartOf: { '@type': 'WebSite', name: 'BeforeYes', url: siteUrl('/') },
+    })
+    setJsonLd('therapists-register-faq', {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: REGISTER_FAQ.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    })
+
+    return () => {
+      setJsonLd('therapists-register-breadcrumb', null)
+      setJsonLd('therapists-register-schema', null)
+      setJsonLd('therapists-register-faq', null)
+    }
+  }, [doneSlug])
 
   const previewSlug = useMemo(
     () => slugifyName(preferredSlug || fullName) || 'your-name',
@@ -193,13 +269,41 @@ export function ConsultantRegisterPage() {
     <Atmosphere>
       <div className="mx-auto flex min-h-screen max-w-lg flex-col px-margin-mobile py-10 md:px-8">
         <BrandMark to="/" size="sm" />
-        <h1 className="mt-8 font-display text-3xl font-bold tracking-tight text-on-surface">
-          Register as a relationship therapist
-        </h1>
-        <p className="mt-3 leading-relaxed text-on-surface-variant">
-          One step at a time. Your Google Business Profile is the main trust signal
-          we use before publishing your therapist profile.
-        </p>
+
+        <nav aria-label="Breadcrumb" className="mt-6 text-sm text-on-surface-variant">
+          <ol className="flex flex-wrap items-center gap-2">
+            <li>
+              <Link to="/" className="font-semibold text-primary">
+                Home
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li>
+              <Link to={THERAPISTS_PATH} className="font-semibold text-primary">
+                Relationship therapists
+              </Link>
+            </li>
+            <li aria-hidden>/</li>
+            <li className="text-on-surface">Register</li>
+          </ol>
+        </nav>
+
+        <header className="mt-6">
+          <h1 className="font-display text-3xl font-bold tracking-tight text-on-surface">
+            Register as a relationship therapist
+          </h1>
+          <p className="mt-3 leading-relaxed text-on-surface-variant">
+            List your practice on BeforeYes and reach serious couples preparing for
+            commitment. Complete the steps below—your Google Business Profile is the
+            main trust signal we use before publishing.
+          </p>
+        </header>
+
+        <ul className="mt-5 list-disc space-y-1.5 pl-5 text-sm text-on-surface-variant">
+          <li>Reach couples who want pre-marital clarity, not casual dating</li>
+          <li>Public profile with specialties, location, and contact options</li>
+          <li>Admin review after Google Business verification</li>
+        </ul>
 
         <div className="mt-6" aria-hidden>
           <div className="flex items-center justify-between text-xs font-label text-on-surface-variant">
@@ -409,6 +513,35 @@ export function ConsultantRegisterPage() {
             </p>
           )}
         </form>
+
+        <section className="mt-12" aria-labelledby="register-faq-heading">
+          <h2
+            id="register-faq-heading"
+            className="font-headline text-xl font-semibold text-on-surface"
+          >
+            Registration FAQ
+          </h2>
+          <dl className="mt-4 flex flex-col gap-4">
+            {REGISTER_FAQ.map((item) => (
+              <div
+                key={item.q}
+                className="rounded-[20px] border border-outline-variant/30 bg-surface/60 px-5 py-4"
+              >
+                <dt className="font-headline font-semibold text-on-surface">{item.q}</dt>
+                <dd className="mt-2 text-sm leading-relaxed text-on-surface-variant">
+                  {item.a}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-4 text-sm text-on-surface-variant">
+            Prefer to browse first?{' '}
+            <Link to={THERAPISTS_PATH} className="font-semibold text-primary">
+              View the relationship therapists directory
+            </Link>
+            .
+          </p>
+        </section>
 
         <div className="mt-auto pt-16">
           <SiteFooter />

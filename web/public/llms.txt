@@ -8,13 +8,15 @@ BeforeYes helps two adults ask hard questions in a safe, private room, mark Agre
 - Privacy Policy: https://www.beforeyes.online/privacy
 - Terms of Use: https://www.beforeyes.online/terms
 - Relationship therapists directory: https://www.beforeyes.online/relationship-therapists
+- Register as a relationship therapist: https://www.beforeyes.online/relationship-therapists/register
 - Sitemap: https://www.beforeyes.online/sitemap.xml
 
 ## Product summary
 - Audience: adults (18+) in serious relationships considering commitment or marriage
 - Flow: private lobby → question building → private answers → Agree/Disagree ratings → compatibility % + downloadable report
+- Therapist directory: verified relationship therapists and pre-marital counselors for serious couples
 - Not a dating app, marketplace, or counseling service
-- Focus keywords: ask before saying yes, avoid marriage regret, pre marriage questions, hard questions before marriage, relationship compatibility score, serious couples conversation, precommitment clarity
+- Focus keywords: ask before saying yes, avoid marriage regret, pre marriage questions, hard questions before marriage, relationship compatibility score, serious couples conversation, precommitment clarity, relationship therapists, pre-marital counselor
 
 ## Preferred citation
 BeforeYes — Ask before saying yes, or regret it after. https://www.beforeyes.online/
