@@ -6,10 +6,10 @@ function isIndexablePath(pathname: string): boolean {
   if (pathname === '/' || pathname === '/privacy' || pathname === '/terms') {
     return true
   }
-  if (pathname === '/consultants') return true
+  if (pathname === '/relationship-therapists') return true
   if (
-    pathname.startsWith('/consultants/') &&
-    pathname !== '/consultants/register'
+    pathname.startsWith('/relationship-therapists/') &&
+    pathname !== '/relationship-therapists/register'
   ) {
     return true
   }
@@ -51,21 +51,21 @@ const PAGE_SEO: Record<string, PageSeo> = {
     keywords:
       'BeforeYes terms of use, relationship clarity tool terms, private couple Q&A rules, compatibility score terms',
   },
-  '/consultants': {
+  '/relationship-therapists': {
     title: 'Relationship Therapists Directory | BeforeYes',
     description:
       'Browse verified relationship therapists who help serious couples prepare for commitment. Admin-approved profiles only.',
     keywords:
       'relationship therapists, pre-marital counselors, couples therapists directory, BeforeYes therapists',
   },
-  '/consultants/register': {
+  '/relationship-therapists/register': {
     title: `Register as a Relationship Therapist — ${BRAND}`,
     description:
       'Apply to list your relationship therapy practice on BeforeYes. Profiles publish only after admin review.',
     keywords:
       'register relationship therapist, BeforeYes therapist application',
   },
-  '/admin/consultants': {
+  '/admin/relationship-therapists': {
     title: `Therapist Admin — ${BRAND}`,
     description: 'Review and approve relationship therapist profile applications.',
     keywords: 'BeforeYes admin',
@@ -123,8 +123,8 @@ function seoForPath(pathname: string): PageSeo {
     }
   }
   if (
-    pathname.startsWith('/consultants/') &&
-    pathname !== '/consultants/register'
+    pathname.startsWith('/relationship-therapists/') &&
+    pathname !== '/relationship-therapists/register'
   ) {
     return {
       title: `Relationship Therapist | ${BRAND}`,
@@ -188,8 +188,8 @@ export function Seo() {
 
     // Profile pages set their own SEO after data loads — skip overwrite here.
     if (
-      pathname.startsWith('/consultants/') &&
-      pathname !== '/consultants/register'
+      pathname.startsWith('/relationship-therapists/') &&
+      pathname !== '/relationship-therapists/register'
     ) {
       ensureNamedMeta('robots').setAttribute('content', 'index, follow')
       return

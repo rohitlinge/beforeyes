@@ -5,8 +5,8 @@ User-agent: *
 Allow: /
 Allow: /privacy
 Allow: /terms
-Allow: /consultants
-Allow: /consultants/
+Allow: /relationship-therapists
+Allow: /relationship-therapists/
 Allow: /sitemap.xml
 Allow: /llms.txt
 
@@ -18,6 +18,7 @@ Disallow: /join
 Disallow: /join/
 Disallow: /room/
 Disallow: /feedback
+Disallow: /relationship-therapists/register
 Disallow: /consultants/register
 Disallow: /admin/
 
@@ -25,10 +26,10 @@ User-agent: GPTBot
 Allow: /
 Allow: /privacy
 Allow: /terms
-Allow: /consultants
+Allow: /relationship-therapists
 Allow: /sitemap.xml
 Allow: /llms.txt
-Disallow: /consultants/register
+Disallow: /relationship-therapists/register
 Disallow: /admin/
 Disallow: /login
 Disallow: /signup
@@ -41,45 +42,45 @@ User-agent: ChatGPT-User
 Allow: /
 Allow: /privacy
 Allow: /terms
-Allow: /consultants
+Allow: /relationship-therapists
 Allow: /llms.txt
 
 User-agent: Google-Extended
 Allow: /
 Allow: /privacy
 Allow: /terms
-Allow: /consultants
+Allow: /relationship-therapists
 Allow: /sitemap.xml
 Allow: /llms.txt
-Disallow: /consultants/register
+Disallow: /relationship-therapists/register
 Disallow: /admin/
 
 User-agent: anthropic-ai
 Allow: /
 Allow: /privacy
 Allow: /terms
-Allow: /consultants
+Allow: /relationship-therapists
 Allow: /llms.txt
 
 User-agent: ClaudeBot
 Allow: /
 Allow: /privacy
 Allow: /terms
-Allow: /consultants
+Allow: /relationship-therapists
 Allow: /llms.txt
 
 User-agent: PerplexityBot
 Allow: /
 Allow: /privacy
 Allow: /terms
-Allow: /consultants
+Allow: /relationship-therapists
 Allow: /llms.txt
 
 User-agent: Applebot-Extended
 Allow: /
 Allow: /privacy
 Allow: /terms
-Allow: /consultants
+Allow: /relationship-therapists
 Allow: /llms.txt
 
 Sitemap: https://www.beforeyes.online/sitemap.xml

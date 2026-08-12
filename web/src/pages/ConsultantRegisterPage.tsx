@@ -5,6 +5,9 @@ import { BrandMark } from '@/components/BrandMark'
 import { InlineError } from '@/components/InlineError'
 import { SiteFooter } from '@/components/SiteFooter'
 import { submitConsultantApplication } from '@/features/consultants/api'
+import {
+  THERAPISTS_PATH,
+} from '@/features/consultants/paths'
 import { SPECIALTY_OPTIONS, slugifyName } from '@/features/consultants/types'
 
 const LANG_OPTIONS = [
@@ -168,12 +171,12 @@ export function ConsultantRegisterPage() {
             Thanks for registering. An admin will review your Google Business Profile
             and details. Once approved, your page goes live at{' '}
             <span className="font-semibold text-on-surface">
-              /consultants/{doneSlug}
+              {THERAPISTS_PATH}/{doneSlug}
             </span>
             .
           </p>
           <Link
-            to="/consultants"
+            to={THERAPISTS_PATH}
             className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 font-label text-sm font-semibold text-on-primary"
           >
             Browse relationship therapists
@@ -372,7 +375,7 @@ export function ConsultantRegisterPage() {
               <p className="text-xs text-on-surface-variant">
                 Preview:{' '}
                 <span className="font-semibold text-on-surface">
-                  /consultants/{previewSlug}
+                  {THERAPISTS_PATH}/{previewSlug}
                 </span>
               </p>
             </StepBlock>

@@ -19,13 +19,13 @@ export function SiteFooter() {
             className="flex flex-wrap gap-x-5 gap-y-2 font-label text-sm"
           >
             <Link
-              to="/consultants/register"
+              to="/relationship-therapists/register"
               className="hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               Register as a relationship therapist
             </Link>
             <Link
-              to="/consultants"
+              to="/relationship-therapists"
               className="hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
               Relationship therapists

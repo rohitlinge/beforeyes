@@ -6,6 +6,7 @@ import { GateScreen } from '@/components/GateScreen'
 import { PageLoader } from '@/components/PageLoader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { getApprovedConsultantBySlug } from '@/features/consultants/api'
+import { THERAPISTS_PATH, therapistProfilePath } from '@/features/consultants/paths'
 import type { ConsultantProfile } from '@/features/consultants/types'
 
 const SITE_URL = (
@@ -19,7 +20,7 @@ function applyConsultantSeo(c: ConsultantProfile) {
   const keywords =
     c.seoKeywords ||
     [c.fullName, c.title, c.city, ...c.specialties, 'BeforeYes'].join(', ')
-  const url = `${SITE_URL}/consultants/${c.slug}`
+  const url = `${SITE_URL}${therapistProfilePath(c.slug)}`
 
   document.title = title
 
@@ -123,7 +124,7 @@ export function ConsultantProfilePage() {
         title="Profile not found"
         description="This relationship therapist profile is not published or does not exist."
         actionLabel="Browse relationship therapists"
-        actionTo="/consultants"
+        actionTo={THERAPISTS_PATH}
       />
     )
   }
@@ -253,7 +254,7 @@ export function ConsultantProfilePage() {
         </p>
 
         <Link
-          to="/consultants"
+          to={THERAPISTS_PATH}
           className="mt-6 font-label text-sm font-semibold text-primary"
         >
           ← All relationship therapists

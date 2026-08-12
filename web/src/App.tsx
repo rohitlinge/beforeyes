@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { Seo } from '@/components/Seo'
 import { ToastProvider } from '@/components/Toast'
 import { AuthProvider } from '@/features/auth/AuthProvider'
@@ -7,6 +7,11 @@ import {
   PublicOnlyRoute,
   VerifyEmailRoute,
 } from '@/features/auth/ProtectedRoute'
+import {
+  THERAPISTS_ADMIN_PATH,
+  THERAPISTS_PATH,
+  THERAPISTS_REGISTER_PATH,
+} from '@/features/consultants/paths'
 import { LandingPage } from '@/pages/LandingPage'
 import { AuthPage } from '@/pages/AuthPage'
 import { VerifyEmailPage } from '@/pages/VerifyEmailPage'
@@ -25,6 +30,11 @@ import { ConsultantRegisterPage } from '@/pages/ConsultantRegisterPage'
 import { ConsultantsDirectoryPage } from '@/pages/ConsultantsDirectoryPage'
 import { ConsultantProfilePage } from '@/pages/ConsultantProfilePage'
 import { AdminConsultantsPage } from '@/pages/AdminConsultantsPage'
+
+function LegacyConsultantSlugRedirect() {
+  const { slug } = useParams()
+  return <Navigate to={`${THERAPISTS_PATH}/${slug ?? ''}`} replace />
+}
 
 export default function App() {
   return (
@@ -136,22 +146,43 @@ export default function App() {
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />
 
-            <Route path="/consultants" element={<ConsultantsDirectoryPage />} />
             <Route
-              path="/consultants/register"
+              path={THERAPISTS_PATH}
+              element={<ConsultantsDirectoryPage />}
+            />
+            <Route
+              path={THERAPISTS_REGISTER_PATH}
               element={<ConsultantRegisterPage />}
             />
             <Route
-              path="/consultants/:slug"
+              path={`${THERAPISTS_PATH}/:slug`}
               element={<ConsultantProfilePage />}
             />
             <Route
-              path="/admin/consultants"
+              path={THERAPISTS_ADMIN_PATH}
               element={
                 <ProtectedRoute>
                   <AdminConsultantsPage />
                 </ProtectedRoute>
               }
+            />
+
+            {/* Legacy consultant URLs → relationship therapists */}
+            <Route
+              path="/consultants"
+              element={<Navigate to={THERAPISTS_PATH} replace />}
+            />
+            <Route
+              path="/consultants/register"
+              element={<Navigate to={THERAPISTS_REGISTER_PATH} replace />}
+            />
+            <Route
+              path="/consultants/:slug"
+              element={<LegacyConsultantSlugRedirect />}
+            />
+            <Route
+              path="/admin/consultants"
+              element={<Navigate to={THERAPISTS_ADMIN_PATH} replace />}
             />
 
             <Route path="*" element={<Navigate to="/" replace />} />

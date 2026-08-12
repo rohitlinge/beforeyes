@@ -6,6 +6,10 @@ import { InlineError } from '@/components/InlineError'
 import { PageLoader } from '@/components/PageLoader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { listApprovedConsultants } from '@/features/consultants/api'
+import {
+  THERAPISTS_REGISTER_PATH,
+  therapistProfilePath,
+} from '@/features/consultants/paths'
 import type { ConsultantProfile } from '@/features/consultants/types'
 
 export function ConsultantsDirectoryPage() {
@@ -49,7 +53,7 @@ export function ConsultantsDirectoryPage() {
           Only admin-approved profiles are listed here.
         </p>
         <Link
-          to="/consultants/register"
+          to={THERAPISTS_REGISTER_PATH}
           className="mt-6 inline-flex w-fit min-h-11 items-center justify-center rounded-full border border-outline-variant px-5 font-label text-sm font-semibold text-on-surface hover:bg-surface-container"
         >
           Register as a relationship therapist
@@ -68,7 +72,7 @@ export function ConsultantsDirectoryPage() {
             {items.map((c) => (
               <li key={c.id}>
                 <Link
-                  to={`/consultants/${c.slug}`}
+                  to={therapistProfilePath(c.slug)}
                   className="block rounded-[24px] border border-outline-variant/30 bg-surface/80 px-5 py-5 transition-colors hover:border-primary/30 hover:bg-surface-container-low"
                 >
                   <p className="font-headline text-lg font-semibold text-on-surface">

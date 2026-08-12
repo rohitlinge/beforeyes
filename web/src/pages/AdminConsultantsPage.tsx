@@ -14,6 +14,11 @@ import {
   subscribePendingConsultants,
 } from '@/features/consultants/api'
 import {
+  THERAPISTS_ADMIN_PATH,
+  THERAPISTS_PATH,
+  therapistProfilePath,
+} from '@/features/consultants/paths'
+import {
   defaultSeoForConsultant,
   type ConsultantProfile,
 } from '@/features/consultants/types'
@@ -116,7 +121,7 @@ export function AdminConsultantsPage() {
           </h1>
           <Link
             to="/login"
-            state={{ from: '/admin/consultants' }}
+            state={{ from: THERAPISTS_ADMIN_PATH }}
             className="mt-6 inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 font-label text-sm font-semibold text-on-primary"
           >
             Log in
@@ -154,7 +159,7 @@ export function AdminConsultantsPage() {
       <div className="mx-auto flex min-h-screen max-w-4xl flex-col px-margin-mobile py-10 md:px-8">
         <div className="flex items-center justify-between gap-4">
           <BrandMark to="/" size="sm" />
-          <Link to="/consultants" className="font-label text-sm font-semibold text-primary">
+          <Link to={THERAPISTS_PATH} className="font-label text-sm font-semibold text-primary">
             View directory
           </Link>
         </div>
@@ -319,11 +324,13 @@ export function AdminConsultantsPage() {
               >
                 <div>
                   <p className="font-semibold text-on-surface">{c.fullName}</p>
-                  <p className="text-xs text-on-surface-variant">/consultants/{c.slug}</p>
+                  <p className="text-xs text-on-surface-variant">
+                    {therapistProfilePath(c.slug)}
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   <Link
-                    to={`/consultants/${c.slug}`}
+                    to={therapistProfilePath(c.slug)}
                     className="font-label text-xs font-semibold text-primary"
                   >
                     Open
