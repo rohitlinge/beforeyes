@@ -159,11 +159,11 @@ export function AdminConsultantsPage() {
           </Link>
         </div>
         <h1 className="mt-8 font-display text-3xl font-bold tracking-tight text-on-surface">
-          Consultant admin
+          Therapist admin
         </h1>
         <p className="mt-2 text-on-surface-variant">
-          Review applications. Approve with SEO metadata, or delete unverified
-          requests.
+          Review relationship therapist applications. Approve with SEO metadata,
+          or delete unverified requests.
         </p>
 
         <InlineError message={error} />

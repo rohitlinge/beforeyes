@@ -1,5 +1,5 @@
 # BeforeYes — crawl policy for search engines and AI agents
-# Index marketing, legal, and approved consultant profiles.
+# Index marketing, legal, and approved relationship therapist profiles.
 
 User-agent: *
 Allow: /

@@ -88,13 +88,13 @@ export function defaultSeoForConsultant(p: {
   const place = p.city ? ` in ${p.city}` : ''
   const focus = p.specialties.slice(0, 3).join(', ')
   return {
-    seoTitle: `${p.fullName} — ${p.title || 'Relationship Consultant'}${place} | BeforeYes`,
-    seoDescription: `${p.fullName} is a ${p.title || 'relationship consultant'}${place}. Specialties: ${focus || 'couples and pre-marital clarity'}. Find verified guidance on BeforeYes.`,
+    seoTitle: `${p.fullName} — ${p.title || 'Relationship Therapist'}${place} | BeforeYes`,
+    seoDescription: `${p.fullName} is a ${p.title || 'relationship therapist'}${place}. Specialties: ${focus || 'couples and pre-marital clarity'}. Find verified guidance on BeforeYes.`,
     seoKeywords: [
       p.fullName,
       p.title,
       p.city,
-      'relationship consultant',
+      'relationship therapist',
       'pre-marital counselor',
       'couples therapy',
       ...p.specialties,

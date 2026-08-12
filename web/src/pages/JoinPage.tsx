@@ -1,60 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { Atmosphere } from '@/components/Atmosphere'
 import { InlineError } from '@/components/InlineError'
 import { PageLoader } from '@/components/PageLoader'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { getRoom, joinRoom } from '@/features/lobby/api'
-import { db } from '@/lib/firebase'
-
-function debugLog(
-  location: string,
-  message: string,
-  data: Record<string, unknown>,
-  hypothesisId = 'F',
-) {
-  // #region agent log
-  const payload = {
-    sessionId: '518cb8',
-    runId: 'post-fix-3',
-    hypothesisId,
-    location,
-    message,
-    data,
-    timestamp: Date.now(),
-  }
-  fetch('http://127.0.0.1:7370/ingest/ac5c11ac-0645-4a28-afc5-a7c1935a705a', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Debug-Session-Id': '518cb8',
-    },
-    body: JSON.stringify(payload),
-  }).catch(() => {})
-  // #endregion
-}
-
-async function writeJoinBreadcrumb(
-  uid: string,
-  step: string,
-  data: Record<string, unknown>,
-) {
-  // #region agent log
-  if (!db) return
-  try {
-    await updateDoc(doc(db, 'users', uid), {
-      _joinDebug: { step, ...data, at: Date.now() },
-      updatedAt: serverTimestamp(),
-    })
-  } catch (err) {
-    debugLog('JoinPage.tsx:breadcrumb-fail', 'breadcrumb write failed', {
-      step,
-      error: err instanceof Error ? err.message : String(err),
-    }, 'F')
-  }
-  // #endregion
-}
+import { roomPhasePath } from '@/features/lobby/types'
 
 export function JoinPage() {
   const { roomId: routeRoomId } = useParams()
@@ -73,49 +24,29 @@ export function JoinPage() {
   }, [routeRoomId])
 
   useEffect(() => {
-    debugLog('JoinPage.tsx:effect-entry', 'auto-join effect entry', {
-      routeRoomId: routeRoomId ?? null,
-      hasUid: Boolean(uid),
-      hasProfile: Boolean(profile),
-    })
-
     if (!routeRoomId || !uid || !profile) return
 
     let cancelled = false
     setJoining(true)
     setError(null)
     setJoinStep('start')
-    void writeJoinBreadcrumb(uid, 'start', { routeRoomId })
 
     void (async () => {
       try {
         setJoinStep('getRoom')
-        void writeJoinBreadcrumb(uid, 'getRoom', { routeRoomId })
         const existing = await getRoom(routeRoomId)
-        debugLog('JoinPage.tsx:getRoom', 'getRoom result', {
-          found: Boolean(existing),
-          status: existing?.status ?? null,
-          alreadyMember: existing
-            ? existing.partnerA === uid || existing.partnerB === uid
-            : false,
-          cancelled,
-        })
         if (!existing) {
           throw new Error('Room not found. Check the invite link and try again.')
         }
 
         if (existing.partnerA === uid || existing.partnerB === uid) {
+          const dest = roomPhasePath(routeRoomId, existing.status)
           setJoinStep('redirect-member')
-          void writeJoinBreadcrumb(uid, 'redirect-member', { routeRoomId })
-          debugLog('JoinPage.tsx:already-member', 'hard redirect to lobby', {
-            routeRoomId,
-          })
-          window.location.replace(`/room/${routeRoomId}/lobby`)
+          window.location.replace(dest)
           return
         }
 
         setJoinStep('joinRoom')
-        void writeJoinBreadcrumb(uid, 'joinRoom', { routeRoomId })
         await joinRoom({
           roomId: routeRoomId,
           uid,
@@ -123,28 +54,9 @@ export function JoinPage() {
           username: username || '',
         })
         setJoinStep('redirect-joined')
-        void writeJoinBreadcrumb(uid, 'redirect-joined', { routeRoomId })
-        debugLog('JoinPage.tsx:after-join', 'join ok; hard redirect to lobby', {
-          cancelled,
-          routeRoomId,
-        })
-        // Hard navigation avoids React Router / Strict Mode leaving Partner 2
-        // stranded on the join loader after Firestore already accepted the join.
+        // New joiners start in lobby to meet / invite flow.
         window.location.replace(`/room/${routeRoomId}/lobby`)
       } catch (err) {
-        debugLog(
-          'JoinPage.tsx:catch',
-          'auto-join error',
-          {
-            cancelled,
-            error: err instanceof Error ? err.message : String(err),
-          },
-          'E',
-        )
-        void writeJoinBreadcrumb(uid, 'error', {
-          routeRoomId,
-          error: err instanceof Error ? err.message : String(err),
-        })
         if (!cancelled) {
           setJoinStep('error')
           setError(err instanceof Error ? err.message : 'Could not join room.')
@@ -155,7 +67,6 @@ export function JoinPage() {
 
     return () => {
       cancelled = true
-      debugLog('JoinPage.tsx:cleanup', 'auto-join effect cleanup', { routeRoomId })
     }
   }, [routeRoomId, uid, displayName, username, profile])
 
@@ -179,7 +90,8 @@ export function JoinPage() {
       }
 
       if (existing.partnerA === user.uid || existing.partnerB === user.uid) {
-        window.location.replace(`/room/${trimmed}/lobby`)
+        const dest = roomPhasePath(trimmed, existing.status)
+        window.location.replace(dest)
         return
       }
 
@@ -199,7 +111,7 @@ export function JoinPage() {
 
   if (routeRoomId && joining && !error) {
     return (
-      <PageLoader message={`Connecting you to the lobby… (${joinStep})`} />
+      <PageLoader message={`Connecting you to the room… (${joinStep})`} />
     )
   }
 
@@ -218,10 +130,10 @@ export function JoinPage() {
               ? error
                 ? 'Something went wrong joining automatically. Check the code and try again.'
                 : 'Enter the room code from your partner’s invite.'
-              : 'Paste the room code from your partner’s invite link.'}
+              : 'Paste the room code or open the full invite link.'}
           </p>
 
-          <form className="mt-6 flex flex-col gap-3 text-left" onSubmit={onSubmit}>
+          <form className="mt-8 flex flex-col gap-4 text-left" onSubmit={onSubmit}>
             <label className="flex flex-col gap-1.5">
               <span className="font-label text-sm font-semibold text-on-surface-variant">
                 Room code
@@ -230,28 +142,25 @@ export function JoinPage() {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 placeholder="e.g. a1b2c3d4e5"
-                className="rounded-2xl border border-outline-variant bg-surface px-4 py-3.5 text-on-surface outline-none focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
-                disabled={joining}
+                className="rounded-2xl border border-outline-variant bg-surface px-4 py-3 outline-none focus:border-primary"
+                required
               />
             </label>
-
             <InlineError message={error} />
-
             <button
               type="submit"
-              disabled={joining || !code.trim()}
-              className="mt-1 min-h-12 rounded-full bg-primary py-4 font-label font-semibold text-on-primary transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-60"
+              disabled={joining}
+              className="min-h-12 rounded-full bg-primary py-4 font-label font-semibold text-on-primary disabled:opacity-60"
             >
-              {joining ? 'Joining…' : 'Join lobby'}
+              {joining ? 'Joining…' : 'Join room'}
             </button>
           </form>
 
-          <Link
-            to="/app"
-            className="mt-8 inline-block min-h-11 font-label text-sm font-semibold text-primary"
-          >
-            ← Back to app
-          </Link>
+          <p className="mt-6 text-center text-sm text-on-surface-variant">
+            <Link to="/app" className="font-semibold text-primary">
+              Back to app
+            </Link>
+          </p>
         </div>
       </div>
     </Atmosphere>

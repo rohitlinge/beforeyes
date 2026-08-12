@@ -8,7 +8,7 @@ import { StickyCtaBar } from '@/components/StickyCtaBar'
 import { useToast } from '@/components/Toast'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useRoom } from '@/features/lobby/useRoom'
-import { inviteUrl, whatsappShareUrl } from '@/features/lobby/types'
+import { inviteUrl, whatsappShareUrl, roomPhasePath, roomPhaseCtaLabel } from '@/features/lobby/types'
 
 function initials(name: string) {
   return name
@@ -196,10 +196,17 @@ export function LobbyPage() {
           <button
             type="button"
             disabled={!bothConnected}
-            onClick={() => navigate(`/room/${room.roomId}/questions`)}
+            onClick={() => {
+              const dest = roomPhasePath(room.roomId, room.status, {
+                bothConnected,
+              })
+              navigate(dest)
+            }}
             className="flex w-full min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-8 py-4 font-label text-sm font-semibold text-on-primary shadow-[0_8px_20px_-6px_rgba(22,105,101,0.4)] transition-all duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
           >
-            {bothConnected ? 'Start question phase' : 'Waiting for partner…'}
+            {bothConnected
+              ? roomPhaseCtaLabel(room.status)
+              : 'Waiting for partner…'}
             {bothConnected ? (
               <span className="material-symbols-outlined text-[20px]" aria-hidden>
                 arrow_forward

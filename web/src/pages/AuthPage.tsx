@@ -4,6 +4,7 @@ import { Atmosphere } from '@/components/Atmosphere'
 import { BrandMark } from '@/components/BrandMark'
 import { InlineError } from '@/components/InlineError'
 import { useAuth } from '@/features/auth/AuthProvider'
+import { requestPasswordReset } from '@/features/auth/api'
 import { authErrorMessage, normalizeUsername } from '@/features/auth/types'
 
 type AuthPageProps = {
@@ -28,11 +29,14 @@ export function AuthPage({ mode }: AuthPageProps) {
   const [username, setUsername] = useState('')
   const [ageConfirmed, setAgeConfirmed] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [message, setMessage] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [resetting, setResetting] = useState(false)
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
+    setMessage(null)
 
     if (!configured) {
       setError('Firebase is not configured. Add keys to web/.env first.')
@@ -67,6 +71,28 @@ export function AuthPage({ mode }: AuthPageProps) {
     }
   }
 
+  async function onForgotPassword() {
+    setError(null)
+    setMessage(null)
+    if (!configured) {
+      setError('Firebase is not configured. Add keys to web/.env first.')
+      return
+    }
+    if (!email.trim()) {
+      setError('Enter your email above, then tap Forgot password.')
+      return
+    }
+    setResetting(true)
+    try {
+      await requestPasswordReset(email)
+      setMessage('Password reset email sent. Check your inbox.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : authErrorMessage(err))
+    } finally {
+      setResetting(false)
+    }
+  }
+
   return (
     <Atmosphere>
       <div className="flex min-h-screen flex-col items-center justify-center px-margin-mobile py-10">
@@ -87,7 +113,6 @@ export function AuthPage({ mode }: AuthPageProps) {
               <code>.env</code> and restart the server.
             </p>
           )}
-
           <form className="mt-8 flex flex-col gap-4" onSubmit={onSubmit}>
             {!isLogin && (
               <>
@@ -130,6 +155,19 @@ export function AuthPage({ mode }: AuthPageProps) {
               minLength={6}
             />
 
+            {isLogin && (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => void onForgotPassword()}
+                  disabled={resetting}
+                  className="font-label text-sm font-semibold text-primary disabled:opacity-60"
+                >
+                  {resetting ? 'Sending reset…' : 'Forgot password?'}
+                </button>
+              </div>
+            )}
+
             {!isLogin && (
               <label className="mt-1 flex items-start gap-3 text-left text-sm text-on-surface-variant">
                 <input
@@ -154,6 +192,11 @@ export function AuthPage({ mode }: AuthPageProps) {
             )}
 
             <InlineError message={error} />
+            {message && (
+              <p className="rounded-2xl bg-primary-container/40 px-4 py-3 text-sm font-semibold text-on-primary-container">
+                {message}
+              </p>
+            )}
 
             <button
               type="submit"
@@ -200,8 +243,8 @@ function Field(props: {
   label: string
   value: string
   onChange: (v: string) => void
-  placeholder?: string
   type?: string
+  placeholder?: string
   autoComplete?: string
   required?: boolean
   minLength?: number
@@ -220,11 +263,11 @@ function Field(props: {
         autoComplete={props.autoComplete}
         required={props.required}
         minLength={props.minLength}
-        className="rounded-2xl border border-outline-variant bg-surface px-4 py-3.5 text-on-surface outline-none transition-shadow focus:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
+        className="rounded-2xl border border-outline-variant bg-surface px-4 py-3 outline-none focus:border-primary"
       />
-      {props.hint && (
+      {props.hint ? (
         <span className="text-xs text-on-surface-variant">{props.hint}</span>
-      )}
+      ) : null}
     </label>
   )
 }

@@ -179,7 +179,7 @@ export function ResultPage() {
           <div className="mt-10 w-full rounded-2xl border border-outline-variant/40 bg-surface-container-low/80 px-5 py-5 text-left">
             <p className="text-sm leading-relaxed text-on-surface-variant">
               You can download this report for yourself or share it with a
-              relationship consultant if you both choose to. It includes your
+              relationship therapist if you both choose to. It includes your
               questions, answers, your ratings, and this compatibility score.
             </p>
             <button

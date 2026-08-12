@@ -176,7 +176,7 @@ export function ConsultantRegisterPage() {
             to="/consultants"
             className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 font-label text-sm font-semibold text-on-primary"
           >
-            Browse consultants
+            Browse relationship therapists
           </Link>
           <div className="mt-auto pt-16">
             <SiteFooter />
@@ -191,11 +191,11 @@ export function ConsultantRegisterPage() {
       <div className="mx-auto flex min-h-screen max-w-lg flex-col px-margin-mobile py-10 md:px-8">
         <BrandMark to="/" size="sm" />
         <h1 className="mt-8 font-display text-3xl font-bold tracking-tight text-on-surface">
-          Register as a consultant
+          Register as a relationship therapist
         </h1>
         <p className="mt-3 leading-relaxed text-on-surface-variant">
           One step at a time. Your Google Business Profile is the main trust signal
-          we use before publishing.
+          we use before publishing your therapist profile.
         </p>
 
         <div className="mt-6" aria-hidden>

@@ -63,7 +63,7 @@ const FAQS = [
   {
     question: 'Can we download a report of our session?',
     answer:
-      'Yes. After your score is revealed, you can download a report for yourself or share it with a relationship consultant if you both choose to.',
+      'Yes. After your score is revealed, you can download a report for yourself or share it with a relationship therapist if you both choose to.',
   },
   {
     question: 'Is our personal data and relationship details secure?',
@@ -337,7 +337,7 @@ export function LandingPage() {
               Questions and answers stay private until you both choose to
               exchange. Then you mark Agree or Disagree on each answer—no Maybe—
               and see a shared compatibility percentage you can download for
-              yourselves or a relationship consultant.
+              yourselves or a relationship therapist.
             </p>
             <Link
               to={primaryTo}

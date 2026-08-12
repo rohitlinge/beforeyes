@@ -150,33 +150,53 @@ export async function submitAgreements(input: {
   const { agreeCount, total } = computeAgreeStats(ratings)
   const firestore = requireDb()
 
-  await setDoc(doc(firestore, 'rooms', room.roomId, 'privateAgreements', uid), {
-    uid,
-    ratings,
-    agreeCount,
-    total,
-    ready: true,
-    submittedAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  })
 
-  // Member-readable summary only — enough to compute score, not which items.
-  await setDoc(doc(firestore, 'rooms', room.roomId, 'agreementSummaries', uid), {
-    uid,
-    agreeCount,
-    total,
-    submittedAt: serverTimestamp(),
-  })
+  try {
+    await setDoc(doc(firestore, 'rooms', room.roomId, 'privateAgreements', uid), {
+      uid,
+      ratings,
+      agreeCount,
+      total,
+      ready: true,
+      submittedAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    })
+  } catch (err) {
+    const base = err instanceof Error ? err.message : String(err)
+    throw new Error(`[privateAgreements] ${base}`)
+  }
 
-  await updateDoc(doc(firestore, 'rooms', room.roomId), {
-    ...(isA
-      ? { partnerAAgreementsSubmitted: true }
-      : { partnerBAgreementsSubmitted: true }),
-    status: 'verdict_pending',
-    updatedAt: serverTimestamp(),
-  })
+  try {
+    await setDoc(doc(firestore, 'rooms', room.roomId, 'agreementSummaries', uid), {
+      uid,
+      agreeCount,
+      total,
+      submittedAt: serverTimestamp(),
+    })
+  } catch (err) {
+    const base = err instanceof Error ? err.message : String(err)
+    throw new Error(`[agreementSummaries] ${base}`)
+  }
 
-  await resolveCompatibilityIfReady(room.roomId)
+  try {
+    await updateDoc(doc(firestore, 'rooms', room.roomId), {
+      ...(isA
+        ? { partnerAAgreementsSubmitted: true }
+        : { partnerBAgreementsSubmitted: true }),
+      status: 'verdict_pending',
+      updatedAt: serverTimestamp(),
+    })
+  } catch (err) {
+    const base = err instanceof Error ? err.message : String(err)
+    throw new Error(`[roomUpdate] ${base}`)
+  }
+
+  try {
+    await resolveCompatibilityIfReady(room.roomId)
+  } catch (err) {
+    const base = err instanceof Error ? err.message : String(err)
+    throw new Error(`[resolveScore] ${base}`)
+  }
 }
 
 export async function resolveCompatibilityIfReady(

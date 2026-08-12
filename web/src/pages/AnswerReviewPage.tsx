@@ -99,8 +99,12 @@ export function AnswerReviewPage() {
   useEffect(() => {
     if (room?.compatibilityScore != null && roomId) {
       navigate(`/room/${roomId}/result`, { replace: true })
+      return
     }
-  }, [room?.compatibilityScore, roomId, navigate])
+    if (iSubmitted && roomId && room?.compatibilityScore == null) {
+      navigate(`/room/${roomId}/verdict`, { replace: true })
+    }
+  }, [room?.compatibilityScore, iSubmitted, roomId, navigate])
 
   useEffect(() => {
     if (!roomId || !room) return
@@ -137,7 +141,8 @@ export function AnswerReviewPage() {
     try {
       await submitAgreements({ room, uid: user.uid, ratings: payload })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not submit ratings.')
+      const msg = err instanceof Error ? err.message : 'Could not submit ratings.'
+      setError(msg)
     } finally {
       setSubmitting(false)
     }

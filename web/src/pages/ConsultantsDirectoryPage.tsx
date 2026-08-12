@@ -20,7 +20,11 @@ export function ConsultantsDirectoryPage() {
       })
       .catch((err) => {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Could not load consultants.')
+          setError(
+            err instanceof Error
+              ? err.message
+              : 'Could not load relationship therapists.',
+          )
           setItems([])
         }
       })
@@ -30,7 +34,7 @@ export function ConsultantsDirectoryPage() {
   }, [])
 
   if (items === null) {
-    return <PageLoader message="Loading consultants…" />
+    return <PageLoader message="Loading relationship therapists…" />
   }
 
   return (
@@ -38,17 +42,17 @@ export function ConsultantsDirectoryPage() {
       <div className="mx-auto flex min-h-screen max-w-3xl flex-col px-margin-mobile py-10 md:px-8">
         <BrandMark to="/" size="sm" />
         <h1 className="mt-8 font-display text-3xl font-bold tracking-tight text-on-surface sm:text-4xl">
-          Relationship consultants
+          Relationship therapists
         </h1>
         <p className="mt-3 max-w-xl leading-relaxed text-on-surface-variant">
-          Verified professionals who help serious couples prepare for commitment.
+          Verified therapists who help serious couples prepare for commitment.
           Only admin-approved profiles are listed here.
         </p>
         <Link
           to="/consultants/register"
           className="mt-6 inline-flex w-fit min-h-11 items-center justify-center rounded-full border border-outline-variant px-5 font-label text-sm font-semibold text-on-surface hover:bg-surface-container"
         >
-          Register as a consultant
+          Register as a relationship therapist
         </Link>
 
         {error ? (
@@ -57,7 +61,7 @@ export function ConsultantsDirectoryPage() {
           </div>
         ) : items.length === 0 ? (
           <p className="mt-10 text-on-surface-variant">
-            No approved consultants yet. Check back soon.
+            No approved relationship therapists yet. Check back soon.
           </p>
         ) : (
           <ul className="mt-10 flex flex-col gap-4">

@@ -23,7 +23,7 @@
     <priority>0.5</priority>
   </url>
 
-  <!-- Consultant directory (approved profile URLs are added as they publish) -->
+  <!-- Relationship therapists directory (approved profile URLs are added as they publish) -->
   <url>
     <loc>https://www.beforeyes.online/consultants</loc>
     <lastmod>2026-08-11</lastmod>

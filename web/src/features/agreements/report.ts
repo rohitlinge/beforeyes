@@ -1,5 +1,5 @@
 /**
- * Build a downloadable compatibility report (HTML) for the couple or a consultant.
+ * Build a downloadable compatibility report (HTML) for the couple or a relationship therapist.
  */
 import type { AnswerItem } from '@/features/answers/api'
 import type { AgreementRating } from '@/features/agreements/api'
@@ -101,7 +101,7 @@ export function buildCompatibilityReportHtml(input: {
     myAnswers,
   )}
 
-  <p class="note">Private by design for the two of you. You may share this file with a relationship consultant if you both choose to. BeforeYes is not legal, medical, or counseling advice.</p>
+  <p class="note">Private by design for the two of you. You may share this file with a relationship therapist if you both choose to. BeforeYes is not legal, medical, or counseling advice.</p>
 </body>
 </html>`
 }

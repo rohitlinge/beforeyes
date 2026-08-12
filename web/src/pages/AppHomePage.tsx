@@ -8,7 +8,7 @@ import { useAuth } from '@/features/auth/AuthProvider'
 import { normalizeUsername } from '@/features/auth/types'
 import { createRoom } from '@/features/lobby/api'
 import { useUserRooms } from '@/features/lobby/useRoom'
-import { statusLabel } from '@/features/lobby/types'
+import { statusLabel, roomPhasePath } from '@/features/lobby/types'
 
 export function AppHomePage() {
   const navigate = useNavigate()
@@ -153,10 +153,11 @@ export function AppHomePage() {
                 ? room.partnerBDisplayName ?? 'Waiting for partner'
                 : room.partnerADisplayName
             const closed = room.status === 'closed'
+            const openPath = roomPhasePath(room.roomId, room.status)
             return (
               <li key={room.roomId}>
                 <Link
-                  to={`/room/${room.roomId}/lobby`}
+                  to={openPath}
                   className="block rounded-[24px] border border-white/50 bg-surface-container px-5 py-4 ambient-shadow transition-transform hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 >
                   <div className="flex items-start justify-between gap-3">

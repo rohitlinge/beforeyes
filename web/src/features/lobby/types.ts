@@ -90,6 +90,59 @@ export function statusLabel(status: RoomStatus): string {
   }
 }
 
+/** Resume path for a room based on shared status (home, join, lobby CTA). */
+export function roomPhasePath(
+  roomId: string,
+  status: RoomStatus,
+  options?: { bothConnected?: boolean },
+): string {
+  switch (status) {
+    case 'waiting_partner':
+      return options?.bothConnected
+        ? `/room/${roomId}/questions`
+        : `/room/${roomId}/lobby`
+    case 'questions_building':
+    case 'questions_ready':
+      return `/room/${roomId}/questions`
+    case 'questions_exchanged':
+    case 'answering':
+    case 'answers_ready':
+      return `/room/${roomId}/answers`
+    case 'answers_exchanged':
+    case 'verdict_pending':
+      return `/room/${roomId}/review`
+    case 'result_revealed':
+      return `/room/${roomId}/result`
+    case 'closed':
+      return `/room/${roomId}/lobby`
+    default:
+      return `/room/${roomId}/lobby`
+  }
+}
+
+export function roomPhaseCtaLabel(status: RoomStatus): string {
+  switch (status) {
+    case 'waiting_partner':
+      return 'Start question phase'
+    case 'questions_building':
+    case 'questions_ready':
+      return 'Continue questions'
+    case 'questions_exchanged':
+    case 'answering':
+    case 'answers_ready':
+      return 'Continue answering'
+    case 'answers_exchanged':
+    case 'verdict_pending':
+      return 'Continue review'
+    case 'result_revealed':
+      return 'View result'
+    case 'closed':
+      return 'View room'
+    default:
+      return 'Continue'
+  }
+}
+
 export const QUESTION_PHASE_DEFAULTS = {
   partnerAReadyQuestions: false,
   partnerBReadyQuestions: false,

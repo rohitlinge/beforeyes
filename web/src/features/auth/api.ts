@@ -2,6 +2,7 @@ import {
   applyActionCode,
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
@@ -128,6 +129,18 @@ export async function signInWithEmail(email: string, password: string) {
   )
   await ensureUserProfile(credential.user)
   return credential.user
+}
+
+export async function requestPasswordReset(email: string): Promise<void> {
+  const { auth: firebaseAuth } = requireAuthDb()
+  const trimmed = email.trim()
+  if (!trimmed) {
+    throw new Error('Enter your email to reset your password.')
+  }
+  await sendPasswordResetEmail(firebaseAuth, trimmed, {
+    url: `${window.location.origin}/login`,
+    handleCodeInApp: false,
+  })
 }
 
 export async function sendVerificationEmail(user?: User) {

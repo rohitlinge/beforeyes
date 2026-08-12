@@ -22,6 +22,7 @@ import {
   type QuestionDeck,
   type QuestionItem,
 } from '@/features/questions/decks'
+import { roomPhasePath } from '@/features/lobby/types'
 
 export function QuestionBuilderPage() {
   const { roomId } = useParams()
@@ -99,8 +100,10 @@ export function QuestionBuilderPage() {
 
   useEffect(() => {
     if (!room || !roomId) return
-    if (room.status === 'answering' || room.status === 'questions_exchanged') {
-      navigate(`/room/${roomId}/answers`, { replace: true })
+    const dest = roomPhasePath(roomId, room.status)
+    const onQuestions = dest.endsWith('/questions')
+    if (!onQuestions) {
+      navigate(dest, { replace: true })
     }
   }, [room, roomId, navigate])
 

@@ -21,7 +21,7 @@ export function TermsPage() {
         BeforeYes is a private two-player tool: create or join a
         room, build questions, answer, then mark Agree or Disagree on each answer
         to reveal a shared compatibility percentage. You may download a session
-        report for yourselves or a consultant. It is not legal, medical, or
+        report for yourselves or a relationship therapist. It is not legal, medical, or
         relationship counseling advice.
       </p>
 

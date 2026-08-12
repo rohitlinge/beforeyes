@@ -15,7 +15,7 @@ const SITE_URL = (
 function applyConsultantSeo(c: ConsultantProfile) {
   const title = c.seoTitle || `${c.fullName} | BeforeYes`
   const description =
-    c.seoDescription || c.bio.slice(0, 155) || `${c.fullName} — relationship consultant`
+    c.seoDescription || c.bio.slice(0, 155) || `${c.fullName} — relationship therapist`
   const keywords =
     c.seoKeywords ||
     [c.fullName, c.title, c.city, ...c.specialties, 'BeforeYes'].join(', ')
@@ -121,8 +121,8 @@ export function ConsultantProfilePage() {
     return (
       <GateScreen
         title="Profile not found"
-        description="This consultant profile is not published or does not exist."
-        actionLabel="Browse consultants"
+        description="This relationship therapist profile is not published or does not exist."
+        actionLabel="Browse relationship therapists"
         actionTo="/consultants"
       />
     )
@@ -147,7 +147,7 @@ export function ConsultantProfilePage() {
           )}
           <div>
             <p className="font-label text-xs font-semibold uppercase tracking-wide text-primary">
-              Verified consultant
+              Verified relationship therapist
             </p>
             <h1 className="mt-1 font-display text-3xl font-bold tracking-tight text-on-surface sm:text-4xl">
               {profile.fullName}
@@ -248,15 +248,15 @@ export function ConsultantProfilePage() {
         </section>
 
         <p className="mt-8 text-xs text-on-surface-variant">
-          BeforeYes lists verified consultants for discovery. We do not provide
-          counseling advice ourselves.
+          BeforeYes lists verified relationship therapists for discovery. We do
+          not provide counseling advice ourselves.
         </p>
 
         <Link
           to="/consultants"
           className="mt-6 font-label text-sm font-semibold text-primary"
         >
-          ← All consultants
+          ← All relationship therapists
         </Link>
 
         <div className="mt-auto pt-16">

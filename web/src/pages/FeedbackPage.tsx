@@ -4,8 +4,8 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { Link } from 'react-router-dom'
 
 const FEEDBACK_URL = import.meta.env.VITE_FEEDBACK_URL?.trim()
-const FEEDBACK_EMAIL =
-  import.meta.env.VITE_FEEDBACK_EMAIL?.trim() || 'feedback@example.com'
+const FEEDBACK_EMAIL = import.meta.env.VITE_FEEDBACK_EMAIL?.trim()
+const hasFeedbackTarget = Boolean(FEEDBACK_URL || FEEDBACK_EMAIL)
 
 export function FeedbackPage() {
   return (
@@ -30,13 +30,20 @@ export function FeedbackPage() {
             >
               Open feedback form
             </a>
-          ) : (
+          ) : FEEDBACK_EMAIL ? (
             <a
               href={`mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent('BeforeYes feedback')}`}
               className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 py-3.5 font-label text-sm font-semibold text-on-primary transition-opacity hover:opacity-90"
             >
               Email feedback
             </a>
+          ) : (
+            <p className="rounded-2xl border border-outline-variant/40 bg-surface-container px-4 py-4 text-sm text-on-surface-variant">
+              Feedback isn’t configured yet. Set{' '}
+              <code className="rounded bg-surface px-1">VITE_FEEDBACK_URL</code> or{' '}
+              <code className="rounded bg-surface px-1">VITE_FEEDBACK_EMAIL</code> in{' '}
+              <code className="rounded bg-surface px-1">.env</code>.
+            </p>
           )}
           <Link
             to="/app"
@@ -46,11 +53,10 @@ export function FeedbackPage() {
           </Link>
         </div>
 
-        {!FEEDBACK_URL && (
+        {hasFeedbackTarget && !FEEDBACK_URL && (
           <p className="mt-6 text-xs text-on-surface-variant">
-            Set <code className="rounded bg-surface-container px-1">VITE_FEEDBACK_URL</code>{' '}
-            (Google Form / Typeform) in <code className="rounded bg-surface-container px-1">.env</code> for
-            a form link instead of email.
+            Tip: set <code className="rounded bg-surface-container px-1">VITE_FEEDBACK_URL</code>{' '}
+            for a form link instead of email.
           </p>
         )}
 

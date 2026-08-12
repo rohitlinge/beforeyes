@@ -52,21 +52,22 @@ const PAGE_SEO: Record<string, PageSeo> = {
       'BeforeYes terms of use, relationship clarity tool terms, private couple Q&A rules, compatibility score terms',
   },
   '/consultants': {
-    title: 'Relationship Consultants Directory | BeforeYes',
+    title: 'Relationship Therapists Directory | BeforeYes',
     description:
-      'Browse verified relationship consultants who help serious couples prepare for commitment. Admin-approved profiles only.',
+      'Browse verified relationship therapists who help serious couples prepare for commitment. Admin-approved profiles only.',
     keywords:
-      'relationship consultants, pre-marital counselors, couples therapists directory, BeforeYes consultants',
+      'relationship therapists, pre-marital counselors, couples therapists directory, BeforeYes therapists',
   },
   '/consultants/register': {
-    title: `Register as a Consultant — ${BRAND}`,
+    title: `Register as a Relationship Therapist — ${BRAND}`,
     description:
-      'Apply to list your relationship consulting practice on BeforeYes. Profiles publish only after admin review.',
-    keywords: 'register relationship consultant, BeforeYes consultant application',
+      'Apply to list your relationship therapy practice on BeforeYes. Profiles publish only after admin review.',
+    keywords:
+      'register relationship therapist, BeforeYes therapist application',
   },
   '/admin/consultants': {
-    title: `Consultant Admin — ${BRAND}`,
-    description: 'Review and approve consultant profile applications.',
+    title: `Therapist Admin — ${BRAND}`,
+    description: 'Review and approve relationship therapist profile applications.',
     keywords: 'BeforeYes admin',
   },
   '/feedback': {
@@ -126,11 +127,11 @@ function seoForPath(pathname: string): PageSeo {
     pathname !== '/consultants/register'
   ) {
     return {
-      title: `Relationship Consultant | ${BRAND}`,
+      title: `Relationship Therapist | ${BRAND}`,
       description:
-        'Verified relationship consultant profile on BeforeYes — guidance for serious couples before commitment.',
+        'Verified relationship therapist profile on BeforeYes — guidance for serious couples before commitment.',
       keywords:
-        'relationship consultant, pre-marital counselor, couples therapist, BeforeYes',
+        'relationship therapist, pre-marital counselor, couples therapist, BeforeYes',
     }
   }
   return PAGE_SEO['/']

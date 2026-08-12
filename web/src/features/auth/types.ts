@@ -33,6 +33,8 @@ export function authErrorMessage(error: unknown): string {
     case 'auth/wrong-password':
     case 'auth/invalid-credential':
       return 'Incorrect email or password.'
+    case 'auth/missing-email':
+      return 'Enter your email to reset your password.'
     case 'auth/too-many-requests':
       return 'Too many attempts. Please wait and try again.'
     case 'auth/network-request-failed':

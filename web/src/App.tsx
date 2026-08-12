@@ -145,7 +145,14 @@ export default function App() {
               path="/consultants/:slug"
               element={<ConsultantProfilePage />}
             />
-            <Route path="/admin/consultants" element={<AdminConsultantsPage />} />
+            <Route
+              path="/admin/consultants"
+              element={
+                <ProtectedRoute>
+                  <AdminConsultantsPage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -22,13 +22,13 @@ export function SiteFooter() {
               to="/consultants/register"
               className="hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
-              Register as consultant
+              Register as a relationship therapist
             </Link>
             <Link
               to="/consultants"
               className="hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             >
-              Consultants
+              Relationship therapists
             </Link>
             <Link
               to="/privacy"

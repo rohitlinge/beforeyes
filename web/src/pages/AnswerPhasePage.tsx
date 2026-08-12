@@ -16,6 +16,7 @@ import {
   subscribePrivateAnswers,
   type AnswerItem,
 } from '@/features/answers/api'
+import { roomPhasePath } from '@/features/lobby/types'
 
 export function AnswerPhasePage() {
   const { roomId } = useParams()
@@ -101,12 +102,10 @@ export function AnswerPhasePage() {
 
   useEffect(() => {
     if (!room || !roomId) return
-    if (
-      room.status === 'answers_exchanged' ||
-      room.status === 'verdict_pending' ||
-      room.status === 'result_revealed'
-    ) {
-      navigate(`/room/${roomId}/review`, { replace: true })
+    const dest = roomPhasePath(roomId, room.status)
+    const onAnswers = dest.endsWith('/answers')
+    if (!onAnswers) {
+      navigate(dest, { replace: true })
     }
   }, [room, roomId, navigate])
 
